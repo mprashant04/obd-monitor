@@ -10,9 +10,9 @@ import com.sohrab.obd.reader.util.Utils;
 
 public class AppAutoTerminate {
     private static void handle(AppCompatActivity activity) {
-        Logs.info("Auto terminate handling.... last data received " + ObdStatus.getLatestDataReceivedSinceSeconds() + " sec ago");
+        Logs.info("Auto terminate handling.... engine off since " + ObdStatus.getEngineOffSinceSeconds() + " sec");
 
-        if (ObdStatus.getLatestDataReceivedSinceSeconds() > AppConfig.getAutoTerminateWhenNoDataSeconds()) {
+        if (ObdStatus.getEngineOffSinceSeconds() > AppConfig.getAutoTerminateAfterEngineOffSeconds()) {
             Logs.info("Terminating app....");
             MultimediaUtils.playSound(activity, MultimediaUtils.SoundFile.APP_CLOSING);
             Utils.delay(5000);

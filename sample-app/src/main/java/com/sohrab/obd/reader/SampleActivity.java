@@ -18,6 +18,10 @@ import com.sohrab.obd.reader.common.Declarations;
 import com.sohrab.obd.reader.obd.ObdStatus;
 import com.sohrab.obd.reader.obdCommand.ObdCommand;
 import com.sohrab.obd.reader.obdCommand.ObdConfiguration;
+import com.sohrab.obd.reader.obdCommand.SpeedCommand;
+import com.sohrab.obd.reader.obdCommand.control.ModuleVoltageCommand;
+import com.sohrab.obd.reader.obdCommand.engine.RPMCommand;
+import com.sohrab.obd.reader.obdCommand.temperature.EngineCoolantTemperatureCommand;
 import com.sohrab.obd.reader.service.ObdReaderService;
 import com.sohrab.obd.reader.trip.TripRecord;
 import com.sohrab.obd.reader.util.DateUtils;
@@ -31,11 +35,6 @@ import java.util.Date;
 
 import static com.sohrab.obd.reader.constants.DefineObdReader.ACTION_OBD_CONNECTION_STATUS;
 import static com.sohrab.obd.reader.constants.DefineObdReader.ACTION_READ_OBD_REAL_TIME_DATA;
-
-/*TODO
-        send health intent to tasker??  to detect if app not running?
- */
-
 
 public class SampleActivity extends AppCompatActivity {
 
@@ -58,12 +57,12 @@ public class SampleActivity extends AppCompatActivity {
         //configure obd: add required command in arrayList and set to ObdConfiguration.
         //If you dont set any command or passing null, then all command OBD command will be requested.  (in case you want to read EVERYTHING)
         ArrayList<ObdCommand> obdCommands = new ArrayList<>();
-        //obdCommands.add(new SpeedCommand());
-        //obdCommands.add(new RPMCommand());
-        //obdCommands.add(new EngineCoolantTemperatureCommand());
-        //obdCommands.add(new LoadCommand());
+        obdCommands.add(new SpeedCommand());
+        obdCommands.add(new RPMCommand());
+        obdCommands.add(new EngineCoolantTemperatureCommand());
+        obdCommands.add(new ModuleVoltageCommand());
 
-        obdCommands = null; // reading ALL
+        //obdCommands = null; // reading ALL
         ObdConfiguration.setmObdCommands(this, obdCommands);
 
 
@@ -117,12 +116,13 @@ public class SampleActivity extends AppCompatActivity {
                 }
 
             } else if (action.equals(ACTION_READ_OBD_REAL_TIME_DATA)) {
-                ObdStatus.dataReceived();
-
                 TripRecord tripRecord = TripRecord.getTripRecode(SampleActivity.this);
                 mObdInfoTextView.setText(tripRecord.toString() + getConfigText());
 
                 AlertHandler.handle(context, tripRecord);
+
+                if (tripRecord.getEngineRpm() > 0) ObdStatus.engineRunning();
+
             }
         }
     };
@@ -145,15 +145,15 @@ public class SampleActivity extends AppCompatActivity {
         txt += "High speed alert: " + AppConfig.getHighSpeedAlertKmpl() + " Kmpl\n";
         txt += "High speed alert delay: " + AppConfig.getHighSpeedAlertIntervalSeconds() + " sec\n";
         txt += "Tasker health status interval: " + AppConfig.getTaskerHealthStatusIntervalSeconds() + " sec\n";
-        txt += "Auto terminate when no data: " + AppConfig.getAutoTerminateWhenNoDataSeconds() + " sec\n";
+        txt += "Auto terminate after engine off: " + AppConfig.getAutoTerminateAfterEngineOffSeconds() + " sec\n";
 
         txt += "\n";
 
-//        txt += (ObdStatus.getLatestDataReceivedSinceSeconds() > 5
-//                ? "No data since " + ObdStatus.getLatestDataReceivedSinceSeconds() + " sec\n"
-//                :
-//                "");
-        txt += "(" + DateUtils.format("HH:mm:ss.S", new Date()) + ")                          v" + Declarations.APP_VER;
+        txt += (ObdStatus.getEngineOffSinceSeconds() > 5
+                ? "Engine off since " + ObdStatus.getEngineOffSinceSeconds() + " sec\n"
+                :
+                "");
+        txt += "(" + DateUtils.format("HH:mm:ss.S", new Date()) + ")                                      v" + Declarations.APP_VER;
         return txt;
     }
 

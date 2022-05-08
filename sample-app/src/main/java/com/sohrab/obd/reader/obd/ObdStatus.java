@@ -6,16 +6,16 @@ import java.util.Date;
 
 public class ObdStatus {
 
-    private static Date latestDataReceivedOn = new Date();
+    private static Date latestEngineRunningOn = new Date();
 
 
-    public static long getLatestDataReceivedSinceSeconds() {
-        return DateUtils.diffInSeconds(latestDataReceivedOn);
+    public static long getEngineOffSinceSeconds() {
+        return DateUtils.diffInSeconds(latestEngineRunningOn);
     }
 
 
-    public static synchronized void dataReceived() {
-        latestDataReceivedOn = new Date();
+    public static synchronized void engineRunning() {
+        latestEngineRunningOn = new Date();
     }
 
 

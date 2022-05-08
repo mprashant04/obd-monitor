@@ -74,7 +74,7 @@ public class TripRecord implements DefineObdReader {
     private final static String IGNITION_MONITOR = "Ignition monitor";
 
     private Integer engineRpmMax = 0;
-    private String engineRpm;
+    private int engineRpm;
     private Integer speed = -1;
     private Integer speedMax = 0;
     private String engineRuntime;
@@ -204,7 +204,7 @@ public class TripRecord implements DefineObdReader {
     private void calculateMaf() {
 
         if (mIntakePressure > 0 && mIntakeAirTemp > 0) {
-            float rpm = Float.parseFloat(engineRpm);
+            float rpm = engineRpm;
             float imap = ((rpm * mIntakePressure) / mIntakeAirTemp) / 2;
             //   float engineDisp = ObdReaderApplication.getInstance().getLoggedInUser().getDisp();
             float engineDisp = 2;
@@ -289,9 +289,9 @@ public class TripRecord implements DefineObdReader {
     }
 
     public void setEngineRpm(String value) {
-        engineRpm = value;
-        if (value != null && this.engineRpmMax < Integer.parseInt(value)) {
-            this.engineRpmMax = Integer.parseInt(value);
+        engineRpm = Integer.parseInt(value);
+        if (value != null && this.engineRpmMax < engineRpm) {
+            this.engineRpmMax = engineRpm;
         }
     }
 
@@ -321,7 +321,7 @@ public class TripRecord implements DefineObdReader {
         return (mIsMAFSupported || mIsTempPressureSupported) ? mIdlingFuelConsumption : MINUS_ONE;
     }
 
-    public String getEngineRpm() {
+    public int getEngineRpm() {
         return engineRpm;
     }
 
@@ -680,6 +680,8 @@ public class TripRecord implements DefineObdReader {
         return "OBD data ::" +
                 "\n" + AvailableCommandNames.SPEED.getValue() + ":  " + speed + " km/h" +
                 "\n" + AvailableCommandNames.ENGINE_RPM.getValue() + ":  " + engineRpm +
+                "\n" + AvailableCommandNames.ENGINE_COOLANT_TEMP.getValue() + ":  " + mEngineCoolantTemp +
+
                 "\n" + AvailableCommandNames.ENGINE_RUNTIME.getValue() + ":  " + engineRuntime + "hh:mm:ss" +
                 "\n" + AvailableCommandNames.TROUBLE_CODES.getValue() + ":  " + mFaultCodes +
                 "\nIdling Fuel Consumtion: " + getmIdlingFuelConsumption() + " Litre" +
@@ -702,7 +704,7 @@ public class TripRecord implements DefineObdReader {
                 "\n" + AvailableCommandNames.FUEL_LEVEL.getValue() + ":  " + mFuelLevel +
                 "\n" + AvailableCommandNames.FUEL_PRESSURE.getValue() + ":  " + mFuelPressure +
                 "\n" + AvailableCommandNames.ENGINE_FUEL_RATE.getValue() + ":  " + mEngineFuelRate +
-                "\n" + AvailableCommandNames.ENGINE_COOLANT_TEMP.getValue() + ":  " + mEngineCoolantTemp +
+
                 "\n" + AvailableCommandNames.ENGINE_LOAD.getValue() + ":  " + mEngineLoad +
                 "\n" + AvailableCommandNames.ENGINE_OIL_TEMP.getValue() + ":  " + mEngineOilTemp +
 

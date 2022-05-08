@@ -16,6 +16,7 @@ public class AlertHandler {
     private static Date lastAlertOn = DateUtils.addHours(new Date(), -1);
     private static Date lastSpeedAlertOn = DateUtils.addHours(new Date(), -1);
     private static Date lastHealthStatusSentToTaskerOn = DateUtils.addHours(new Date(), -1);
+    private static Date instanciatedOn = new Date();
 
     private static boolean speedAboveLimit = false;
     private static boolean alertTriggered = false;
@@ -24,6 +25,8 @@ public class AlertHandler {
 
     public static synchronized void handle(Context context, TripRecord tripRecord) {
         try {
+            if (DateUtils.diffInSeconds(instanciatedOn) < 5) return;  //skip alerts for first few seconds, to prevent false alerts
+
             float coolantTemp = tripRecord.getmEngineCoolantTempValue();
             double voltage = tripRecord.getmControlModuleVoltageValue();
 

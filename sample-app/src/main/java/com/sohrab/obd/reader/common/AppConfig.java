@@ -1,6 +1,5 @@
 package com.sohrab.obd.reader.common;
 
-import com.sohrab.obd.reader.common.Declarations;
 import com.sohrab.obd.reader.util.Logs;
 
 import java.io.File;
@@ -48,8 +47,8 @@ public class AppConfig {
         return Integer.parseInt(props.getProperty("health-status-to-tasker-interval-seconds", "9999"));
     }
 
-    public static int getAutoTerminateWhenNoDataSeconds() {
-        return Integer.parseInt(props.getProperty("auto-terminate-when-no-data-seconds", "9999"));
+    public static int getAutoTerminateAfterEngineOffSeconds() {
+        return Integer.parseInt(props.getProperty("auto-terminate-after-engine-off-seconds", "9999"));
     }
 
 }
