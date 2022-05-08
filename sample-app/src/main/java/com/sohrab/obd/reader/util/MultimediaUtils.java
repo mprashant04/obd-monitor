@@ -14,6 +14,7 @@ import static android.media.AudioManager.STREAM_RING;
 public class MultimediaUtils {
 
     public enum SoundFile {
+        ENGINE_SWITCHED_OFF("engine-off.mp3"),
         APP_STARTED("app-started.mp3"),
         OBD_DEVICE_CONNECTED("obd-device-connected.mp3"),
         OBD_DEVICE_DISCONNECTED("obd-device-disconnected.mp3"),

@@ -18,6 +18,7 @@ public class AlertHandler {
     private static Date lastHealthStatusSentToTaskerOn = DateUtils.addHours(new Date(), -1);
     private static Date instanciatedOn = new Date();
 
+    private static boolean engineRunning = false;
     private static boolean speedAboveLimit = false;
     private static boolean alertTriggered = false;
     private static MultimediaUtils.SoundFile alertSoundFilename = null;
@@ -25,22 +26,36 @@ public class AlertHandler {
 
     public static synchronized void handle(Context context, TripRecord tripRecord) {
         try {
-            if (DateUtils.diffInSeconds(instanciatedOn) < 5) return;  //skip alerts for first few seconds, to prevent false alerts
+            if (DateUtils.diffInSeconds(instanciatedOn) < 5)
+                return;  //skip alerts for first few seconds, to prevent false alerts
 
             float coolantTemp = tripRecord.getmEngineCoolantTempValue();
             double voltage = tripRecord.getmControlModuleVoltageValue();
 
-            alertReset();
-            alertCheck(coolantTemp >= AppConfig.getCoolantAlertTemperature(), MultimediaUtils.SoundFile.ALERT_HIGH_COOLANT_TEMP, "Coolant temperature alert - " + coolantTemp);
-            alertCheck(voltage <= AppConfig.getLowVoltageAlertLimit(), MultimediaUtils.SoundFile.ALERT_LOW_VOLTAGE, "Voltage low alert - " + voltage);
-            alertShow(context);
+            if (!alertEngineSwitchOff(context, tripRecord)) {
+                alertReset();
+                alertCheck(coolantTemp >= AppConfig.getCoolantAlertTemperature(), MultimediaUtils.SoundFile.ALERT_HIGH_COOLANT_TEMP, "Coolant temperature alert - " + coolantTemp);
+                alertCheck(voltage <= AppConfig.getLowVoltageAlertLimit(), MultimediaUtils.SoundFile.ALERT_LOW_VOLTAGE, "Voltage low alert - " + voltage);
+                alertShow(context);
 
-            alertHighSpeed(context, tripRecord);
+                alertHighSpeed(context, tripRecord);
+            }
 
             sendHealthStatusToTasker(context);   //OK health status only after all success, hence no try-catch blocks in above sub methods
         } catch (Throwable ex) {
             Logs.error(ex);
         }
+    }
+
+    private static boolean alertEngineSwitchOff(Context context, TripRecord tripRecord) {
+        if (engineRunning && tripRecord.getEngineRpm() <= 0) {
+            engineRunning = false;
+            MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ENGINE_SWITCHED_OFF);
+            return true;
+        } else if (!engineRunning && tripRecord.getEngineRpm() > 0) {
+            engineRunning = true;
+        }
+        return false;
     }
 
     private static void alertHighSpeed(Context context, TripRecord tripRecord) {
