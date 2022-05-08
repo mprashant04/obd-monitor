@@ -13,13 +13,22 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:persistent="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:persistent="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SampleActivity"
-            android:screenOrientation="portrait"
-            android:launchMode="singleInstance" >
+
+        /*
+        excludeFromRecents=true >> for preventing app from showing in recent apps list, hence it
+        will not get closed when clear all clicked in recent app list. But clean all is prevented
+        only when another app is opened after this app, if clear all under recent app is clicked
+        immediately after launching this app then the app is killed
+        */
+        <activity
+            android:name=".SampleActivity"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

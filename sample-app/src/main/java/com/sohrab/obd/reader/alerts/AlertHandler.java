@@ -33,12 +33,12 @@ public class AlertHandler {
             double voltage = tripRecord.getmControlModuleVoltageValue();
 
             if (!alertEngineSwitchOff(context, tripRecord)) {
+                alertHighSpeed(context, tripRecord);
+
                 alertReset();
                 alertCheck(coolantTemp >= AppConfig.getCoolantAlertTemperature(), MultimediaUtils.SoundFile.ALERT_HIGH_COOLANT_TEMP, "Coolant temperature alert - " + coolantTemp);
                 alertCheck(voltage <= AppConfig.getLowVoltageAlertLimit(), MultimediaUtils.SoundFile.ALERT_LOW_VOLTAGE, "Voltage low alert - " + voltage);
                 alertShow(context);
-
-                alertHighSpeed(context, tripRecord);
             }
 
             sendHealthStatusToTasker(context);   //OK health status only after all success, hence no try-catch blocks in above sub methods
@@ -59,21 +59,17 @@ public class AlertHandler {
     }
 
     private static void alertHighSpeed(Context context, TripRecord tripRecord) {
-        if (!alertTriggered) {  //only when no other alerts were shown
-            int speed = tripRecord.getSpeed();
-            if (!speedAboveLimit && speed >= AppConfig.getHighSpeedAlertKmpl()) {
-                speedAboveLimit = true;
+        int speed = tripRecord.getSpeed();
+        if (!speedAboveLimit && speed >= AppConfig.getHighSpeedAlertKmpl()) {
+            speedAboveLimit = true;
 
-                if (DateUtils.diffInSeconds(lastSpeedAlertOn) > AppConfig.getHighSpeedAlertIntervalSeconds()) {
-                    MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ALERT_SPEED);
-                    lastSpeedAlertOn = new Date();
-                }
-
-
-            } else if (speedAboveLimit && speed < AppConfig.getHighSpeedAlertKmpl()) {
-                speedAboveLimit = false;
+            if (DateUtils.diffInSeconds(lastSpeedAlertOn) > AppConfig.getHighSpeedAlertIntervalSeconds()) {
+                MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ALERT_SPEED);
+                lastSpeedAlertOn = new Date();
             }
 
+        } else if (speedAboveLimit && speed < AppConfig.getHighSpeedAlertKmpl()) {
+            speedAboveLimit = false;
         }
     }
 
