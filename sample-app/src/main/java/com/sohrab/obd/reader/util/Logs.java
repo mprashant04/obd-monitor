@@ -2,6 +2,8 @@ package com.sohrab.obd.reader.util;
 
 import android.util.Log;
 
+import com.sohrab.obd.reader.common.Declarations;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
@@ -21,7 +23,7 @@ public class Logs {
 
     static {
         createLogDirectory();
-        error("I N I T =============================================================================");
+        error("v" + Declarations.APP_VER + " =============================================================================");
     }
 
     private static void createLogDirectory() {
@@ -50,7 +52,7 @@ public class Logs {
 
     private static synchronized void write(String template, String msg) {
         try {
-            Log.d("#########################################",msg);  //for ide console debug
+            Log.d("#########################################", msg);  //for ide console debug
 
 
             File file = new File(PATH, "" + DateUtils.format("yyyy_MM_dd", new Date()) + ".html");

@@ -14,6 +14,7 @@ import com.sohrab.obd.reader.alerts.AlertHandler;
 import com.sohrab.obd.reader.application.ObdPreferences;
 import com.sohrab.obd.reader.common.AppAutoTerminate;
 import com.sohrab.obd.reader.common.AppConfig;
+import com.sohrab.obd.reader.common.Declarations;
 import com.sohrab.obd.reader.obd.ObdStatus;
 import com.sohrab.obd.reader.obdCommand.ObdCommand;
 import com.sohrab.obd.reader.obdCommand.ObdConfiguration;
@@ -85,7 +86,7 @@ public class SampleActivity extends AppCompatActivity {
             DialogUtils.alertDialog(this, "Disable the battery optimization...");
         }
 
-        AppAutoTerminate.init( this);
+        AppAutoTerminate.init(this);
     }
 
     /**
@@ -152,7 +153,7 @@ public class SampleActivity extends AppCompatActivity {
 //                ? "No data since " + ObdStatus.getLatestDataReceivedSinceSeconds() + " sec\n"
 //                :
 //                "");
-        txt += "(" + DateUtils.format("HH:mm:ss.S", new Date()) + ")";
+        txt += "(" + DateUtils.format("HH:mm:ss.S", new Date()) + ")                          v" + Declarations.APP_VER;
         return txt;
     }
 
