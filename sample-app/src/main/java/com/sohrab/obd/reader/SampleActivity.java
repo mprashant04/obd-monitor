@@ -166,6 +166,7 @@ public class SampleActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         MultimediaUtils.playSound(this, MultimediaUtils.SoundFile.APP_CLOSING);
+        Utils.delay(5000);
 
         super.onDestroy();
         //unregister receiver
