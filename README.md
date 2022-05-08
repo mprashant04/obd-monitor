@@ -10,6 +10,7 @@ Created from this open source project: https://github.com/md-sohrab-alam/android
 - https://voicemaker.in/
 - settings
      - AI Engine: Neutral TTS
+     - Language - English, US
      - Voices: Salli, Female
      - voice settings: +20 dB
      - voice effect: DRC
