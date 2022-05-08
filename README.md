@@ -11,4 +11,6 @@ Created from this open source project: https://github.com/md-sohrab-alam/android
 - settings
      - AI Engine: Neutral TTS
      - Voices: Salli, Female
+     - voice settings: +20 dB
+     - voice effect: DRC
 
