@@ -15,6 +15,7 @@ import com.sohrab.obd.reader.obdCommand.engine.RuntimeCommand;
 import com.sohrab.obd.reader.obdCommand.fuel.FindFuelTypeCommand;
 import com.sohrab.obd.reader.obdCommand.pressure.IntakeManifoldPressureCommand;
 import com.sohrab.obd.reader.obdCommand.temperature.AirIntakeTemperatureCommand;
+import com.sohrab.obd.reader.obdCommand.temperature.TemperatureCommand;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -77,7 +78,7 @@ public class TripRecord implements DefineObdReader {
     private Integer speedMax = 0;
     private String engineRuntime;
     private static TripRecord sInstance;
-    private long tripStartTime;
+    private final long tripStartTime;
     private float idlingDuration;
     private float drivingDuration;
     private long mAddSpeed;
@@ -97,7 +98,7 @@ public class TripRecord implements DefineObdReader {
     private int mIdleMafCount;
     private int mSecondAgoSpeed;
     private float gramToLitre = GRAM_TO_LITRE_GASOLIN;
-    private String mTripIdentifier;
+    private final String mTripIdentifier;
     private boolean mIsMAFSupported = true;
     private boolean mIsEngineRuntimeSupported = true;
     private boolean mIsTempPressureSupported = true;
@@ -106,6 +107,7 @@ public class TripRecord implements DefineObdReader {
     private String mFaultCodes = "";
     private String mAmbientAirTemp;
     private String mEngineCoolantTemp;
+    private float mEngineCoolantTempValue;
     private String mEngineOilTemp;
     private String mFuelConsumptionRate;
     private String mEngineFuelRate;
@@ -377,6 +379,7 @@ public class TripRecord implements DefineObdReader {
 
             case ENGINE_COOLANT_TEMP:
                 mEngineCoolantTemp = command.getFormattedResult();
+                mEngineCoolantTempValue = ((TemperatureCommand) command).getTemperature();
                 break;
 
             case ENGINE_OIL_TEMP:
@@ -529,6 +532,10 @@ public class TripRecord implements DefineObdReader {
         return mEngineCoolantTemp;
     }
 
+    public float getmEngineCoolantTempValue() {
+        return mEngineCoolantTempValue;
+    }
+
     public String getmEngineOilTemp() {
         return mEngineOilTemp;
     }
@@ -629,7 +636,7 @@ public class TripRecord implements DefineObdReader {
         return mIgnitionMonitor;
     }
 
-   private ArrayList<ObdCommand> mObdCommandArrayList;
+    private ArrayList<ObdCommand> mObdCommandArrayList;
 
     public ArrayList<ObdCommand> getmObdCommandArrayList() {
 

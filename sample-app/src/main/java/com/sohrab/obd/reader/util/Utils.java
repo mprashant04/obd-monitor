@@ -10,6 +10,14 @@ import android.provider.Settings;
 import static android.content.Context.POWER_SERVICE;
 
 public class Utils {
+    public static void delay(int milliSeconds) {
+        try {
+            Thread.sleep(milliSeconds);
+        } catch (InterruptedException e) {
+        }
+    }
+
+
     public static synchronized boolean isBatteryOptimizationEnabled(Context context) {
         Intent intent = new Intent();
         String packageName = context.getPackageName();

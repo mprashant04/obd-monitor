@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sohrab.obd.reader.alerts.AlertHandler;
 import com.sohrab.obd.reader.application.ObdPreferences;
 import com.sohrab.obd.reader.obdCommand.ObdCommand;
 import com.sohrab.obd.reader.obdCommand.ObdConfiguration;
@@ -21,6 +22,7 @@ import com.sohrab.obd.reader.service.ObdReaderService;
 import com.sohrab.obd.reader.trip.TripRecord;
 import com.sohrab.obd.reader.util.DialogUtils;
 import com.sohrab.obd.reader.util.Logs;
+import com.sohrab.obd.reader.util.MultimediaUtils;
 import com.sohrab.obd.reader.util.Utils;
 
 import java.util.ArrayList;
@@ -49,6 +51,9 @@ public class SampleActivity extends AppCompatActivity {
         Utils.checkExternalStorageAccess(this);
         Logs.info("App Opened ====================================================================");
 
+        MultimediaUtils.playSound(this, "app-started.mp3");
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mObdInfoTextView = findViewById(R.id.tv_obd_info);
@@ -61,9 +66,6 @@ public class SampleActivity extends AppCompatActivity {
         obdCommands.add(new RPMCommand());
         obdCommands.add(new EngineCoolantTemperatureCommand());
         obdCommands.add(new LoadCommand());
-        ObdConfiguration.setmObdCommands(this, obdCommands);
-
-        // passing null means we are executing all OBD command for now, but you should add required command for fast retrieval like above commented lines.
         ObdConfiguration.setmObdCommands(this, obdCommands);
 
 
@@ -86,7 +88,6 @@ public class SampleActivity extends AppCompatActivity {
             DialogUtils.alertDialog(this, "Disable the battery optimization...");
         }
 
-
     }
 
     /**
@@ -108,8 +109,11 @@ public class SampleActivity extends AppCompatActivity {
 
                 if (connectionStatusMsg.equals(getString(R.string.obd_connected))) {
                     //OBD connected  do what want after OBD connection
+                    Logs.info("OBD device connected -------------------");
+                    MultimediaUtils.playSound(context, "obd-device-connected.mp3");
                 } else if (connectionStatusMsg.equals(getString(R.string.connect_lost))) {
-                    //OBD disconnected  do what want after OBD disconnection
+                    Logs.info("OBD device dis-connected -------------------");
+                    MultimediaUtils.playSound(context, "obd-device-disconnected.mp3");
                 } else {
                     // here you could check OBD connection and pairing status
                 }
@@ -118,9 +122,14 @@ public class SampleActivity extends AppCompatActivity {
 
                 TripRecord tripRecord = TripRecord.getTripRecode(SampleActivity.this);
                 mObdInfoTextView.setText(tripRecord.toString());
+
                 // here you can fetch real time data from TripRecord using getter methods like
                 //tripRecord.getSpeed();
                 //tripRecord.getEngineRpm();
+
+                //=============== Engine coolant temp alert =====================================================
+                AlertHandler.checkCoolantTemp(context, tripRecord);
+
             }
 
         }
@@ -128,6 +137,9 @@ public class SampleActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        MultimediaUtils.playSound(this, "test.mp3");
+
+
         super.onDestroy();
         //unregister receiver
         unregisterReceiver(mObdReaderReceiver);
