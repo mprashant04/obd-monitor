@@ -136,9 +136,14 @@ public class SampleActivity extends AppCompatActivity {
     };
 
     @Override
+    public void onBackPressed() {
+        //hack: to prevent activity from closing on back button press
+        this.moveTaskToBack(true);
+    }
+
+    @Override
     protected void onDestroy() {
         MultimediaUtils.playSound(this, "test.mp3");
-
 
         super.onDestroy();
         //unregister receiver
