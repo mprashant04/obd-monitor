@@ -7,12 +7,37 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 
+import com.sohrab.obd.reader.common.Declarations;
+
 import static android.media.AudioManager.STREAM_RING;
 
 public class MultimediaUtils {
+
+    public enum SoundFile {
+        APP_STARTED("app-started.mp3"),
+        OBD_DEVICE_CONNECTED("obd-device-connected.mp3"),
+        OBD_DEVICE_DISCONNECTED("obd-device-disconnected.mp3"),
+        APP_CLOSING("app-closing.mp3"),
+        ALERT_MULTIPLE("multiple-alerts.mp3"),
+        ALERT_HIGH_COOLANT_TEMP("high-engine-temp.mp3"),
+        ALERT_LOW_VOLTAGE("low-voltage.mp3"),
+        ALERT_SPEED("speed-alert.ogg");
+
+        private String fileName = "";
+
+        SoundFile(String s) {
+            this.fileName = s;
+        }
+
+        public String getFileName() {
+            return fileName;
+        }
+    }
+
+
     private static MediaPlayer player = null;
 
-    public static synchronized void playSound(Context ctx, String filename) {
+    public static synchronized void playSound(Context ctx, SoundFile file) {
         AssetManager am;
         try {
             AudioAttributes audioAttributes = new AudioAttributes.Builder()
@@ -26,7 +51,7 @@ public class MultimediaUtils {
             stopPlayer();
 
             player = MediaPlayer.create(ctx,
-                    Uri.parse("/storage/emulated/0/_My/Obd-Monitor/resources-audio/" + filename),
+                    Uri.parse(Declarations.ROOT_SD_FOLDER_PATH + "/resources-audio/" + file.getFileName()),
                     null,
                     audioAttributes,
                     audioManager.generateAudioSessionId());
@@ -54,5 +79,16 @@ public class MultimediaUtils {
         } catch (Throwable e) {
             Logs.error(e);
         }
+    }
+
+    public static void testAllSoundFiles(Context ctx) {
+
+        for (SoundFile s : SoundFile.values()) {
+            playSound(ctx, s);
+            Utils.delay(5000);
+        }
+
+        System.exit(0);
+
     }
 }

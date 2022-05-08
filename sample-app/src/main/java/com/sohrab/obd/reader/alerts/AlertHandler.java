@@ -1,15 +1,104 @@
 package com.sohrab.obd.reader.alerts;
 
 import android.content.Context;
+import android.content.Intent;
 
+import com.sohrab.obd.reader.common.AppConfig;
+import com.sohrab.obd.reader.common.Declarations;
 import com.sohrab.obd.reader.trip.TripRecord;
+import com.sohrab.obd.reader.util.DateUtils;
+import com.sohrab.obd.reader.util.Logs;
 import com.sohrab.obd.reader.util.MultimediaUtils;
 
+import java.util.Date;
+
 public class AlertHandler {
-    public static void checkCoolantTemp(Context context, TripRecord tripRecord) {
-        float temp = tripRecord.getmEngineCoolantTempValue();
-        if (temp > 10) {
-            MultimediaUtils.playSound(context, "high-engine-temp.mp3");
+    private static Date lastAlertOn = DateUtils.addHours(new Date(), -1);
+    private static Date lastSpeedAlertOn = DateUtils.addHours(new Date(), -1);
+    private static Date lastHealthStatusSentToTaskerOn = DateUtils.addHours(new Date(), -1);
+
+    private static boolean speedAboveLimit = false;
+    private static boolean alertTriggered = false;
+    private static MultimediaUtils.SoundFile alertSoundFilename = null;
+
+
+    public static synchronized void handle(Context context, TripRecord tripRecord) {
+        try {
+            float coolantTemp = tripRecord.getmEngineCoolantTempValue();
+            double voltage = tripRecord.getmControlModuleVoltageValue();
+
+            alertReset();
+            alertCheck(coolantTemp >= AppConfig.getCoolantAlertTemperature(), MultimediaUtils.SoundFile.ALERT_HIGH_COOLANT_TEMP, "Coolant temperature alert - " + coolantTemp);
+            alertCheck(voltage <= AppConfig.getLowVoltageAlertLimit(), MultimediaUtils.SoundFile.ALERT_LOW_VOLTAGE, "Voltage low alert - " + voltage);
+            alertShow(context);
+
+            alertHighSpeed(context, tripRecord);
+
+            sendHealthStatusToTasker(context);   //OK health status only after all success, hence no try-catch blocks in above sub methods
+        } catch (Throwable ex) {
+            Logs.error(ex);
         }
     }
+
+    private static void alertHighSpeed(Context context, TripRecord tripRecord) {
+        if (!alertTriggered) {  //only when no other alerts were shown
+            int speed = tripRecord.getSpeed();
+            if (!speedAboveLimit && speed >= AppConfig.getHighSpeedAlertKmpl()) {
+                speedAboveLimit = true;
+
+                if (DateUtils.diffInSeconds(lastSpeedAlertOn) > AppConfig.getHighSpeedAlertIntervalSeconds()) {
+                    MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ALERT_SPEED);
+                    lastSpeedAlertOn = new Date();
+                }
+
+
+            } else if (speedAboveLimit && speed < AppConfig.getHighSpeedAlertKmpl()) {
+                speedAboveLimit = false;
+            }
+
+        }
+    }
+
+    private static void alertShow(Context context) {
+        if (alertTriggered && DateUtils.diffInSeconds(lastAlertOn) > AppConfig.getAlertIntervalSeconds()) {
+            MultimediaUtils.playSound(context, alertSoundFilename);
+            lastAlertOn = new Date();
+        }
+    }
+
+    private static void alertCheck(boolean alertCondition, MultimediaUtils.SoundFile soundFileName, String logMessage) {
+        if (alertCondition) {
+            Logs.warn(Declarations.BELL_CHAR_HTML + " " + logMessage);
+
+            if (!alertTriggered) {
+                alertTriggered = true;
+                alertSoundFilename = soundFileName;
+            } else {
+                alertSoundFilename = MultimediaUtils.SoundFile.ALERT_MULTIPLE;
+            }
+        }
+    }
+
+    private static void alertReset() {
+        alertTriggered = false;
+    }
+
+
+    public static void sendHealthStatusToTasker(Context context) {
+        try {
+            if (DateUtils.diffInSeconds(lastHealthStatusSentToTaskerOn) > AppConfig.getTaskerHealthStatusIntervalSeconds()) {
+                Intent intent = new Intent("com.sohrab.obd.reader.connection_ok");
+                intent.putExtra("status", "ok");
+                //intent.putExtra("title", title);
+                context.sendBroadcast(intent);
+                lastHealthStatusSentToTaskerOn = new Date();
+
+                Logs.info("Tasker health OK status sent");
+            }
+        } catch (Throwable ex) {
+            Logs.error(ex);
+        }
+    }
+
+
 }

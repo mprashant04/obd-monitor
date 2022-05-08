@@ -9,6 +9,7 @@ import com.sohrab.obd.reader.enums.AvailableCommandNames;
 import com.sohrab.obd.reader.enums.FuelType;
 import com.sohrab.obd.reader.obdCommand.ObdCommand;
 import com.sohrab.obd.reader.obdCommand.SpeedCommand;
+import com.sohrab.obd.reader.obdCommand.control.ModuleVoltageCommand;
 import com.sohrab.obd.reader.obdCommand.engine.MassAirFlowCommand;
 import com.sohrab.obd.reader.obdCommand.engine.RPMCommand;
 import com.sohrab.obd.reader.obdCommand.engine.RuntimeCommand;
@@ -121,6 +122,7 @@ public class TripRecord implements DefineObdReader {
     private String mEquivRatio;
     private String mDistanceTraveledAfterCodesCleared;
     private String mControlModuleVoltage;
+    private double mControlModuleVoltageValue;
     private String mFuelRailPressure;
     private String mVehicleIdentificationNumber;
     private String mDistanceTraveledMilOn;
@@ -433,6 +435,7 @@ public class TripRecord implements DefineObdReader {
 
             case CONTROL_MODULE_VOLTAGE:
                 mControlModuleVoltage = command.getFormattedResult();
+                mControlModuleVoltageValue = ((ModuleVoltageCommand) command).getVoltage();
                 break;
 
             case FUEL_RAIL_PRESSURE:
@@ -586,6 +589,10 @@ public class TripRecord implements DefineObdReader {
 
     public String getmControlModuleVoltage() {
         return mControlModuleVoltage;
+    }
+
+    public double getmControlModuleVoltageValue() {
+        return mControlModuleVoltageValue;
     }
 
     public String getmFuelRailPressure() {
