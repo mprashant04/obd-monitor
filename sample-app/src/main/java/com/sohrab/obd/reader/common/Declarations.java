@@ -1,7 +1,7 @@
 package com.sohrab.obd.reader.common;
 
 public class Declarations {
-    public static final String APP_VER = "1.6";
+    public static final String APP_VER = "1.8";
 
     public static final String ROOT_SD_FOLDER_PATH = "/storage/emulated/0/_My/Obd-Monitor";
     public static final String BELL_CHAR_HTML = "&#128276;";

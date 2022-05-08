@@ -9,6 +9,8 @@ import android.net.Uri;
 
 import com.sohrab.obd.reader.common.Declarations;
 
+import java.io.File;
+
 import static android.media.AudioManager.STREAM_RING;
 
 public class MultimediaUtils {
@@ -22,7 +24,7 @@ public class MultimediaUtils {
         ALERT_MULTIPLE("multiple-alerts.mp3"),
         ALERT_HIGH_COOLANT_TEMP("high-engine-temp.mp3"),
         ALERT_LOW_VOLTAGE("low-voltage.mp3"),
-        ALERT_SPEED("speed-alert.ogg");
+        ALERT_SPEED("speed-alert.mp3");
 
         private String fileName = "";
 
@@ -52,7 +54,7 @@ public class MultimediaUtils {
             stopPlayer();
 
             player = MediaPlayer.create(ctx,
-                    Uri.parse(Declarations.ROOT_SD_FOLDER_PATH + "/resources-audio/" + file.getFileName()),
+                    Uri.parse(buildFilePath(file)),
                     null,
                     audioAttributes,
                     audioManager.generateAudioSessionId());
@@ -72,6 +74,10 @@ public class MultimediaUtils {
         }
     }
 
+    private static String buildFilePath(SoundFile file) {
+        return Declarations.ROOT_SD_FOLDER_PATH + "/resources-audio/" + file.getFileName();
+    }
+
     private static void stopPlayer() {
         try {
             if (player != null) {
@@ -80,6 +86,31 @@ public class MultimediaUtils {
         } catch (Throwable e) {
             Logs.error(e);
         }
+    }
+
+    public static void checkIfAllSoundFilesPresent(Context ctx) {
+        try {
+            String missingFiles = "";
+            boolean failed = false;
+            for (SoundFile s : SoundFile.values()) {
+                if (!validateSoundFile(s)) {
+                    failed = true;
+                    missingFiles += "\n - " + s.getFileName();
+                }
+            }
+
+            if (failed) {
+                DialogUtils.alertDialog(ctx, "Missing sound files...", "Following sound files are missing..." + missingFiles);
+            }
+
+        } catch (Throwable e) {
+            Logs.error(e);
+            DialogUtils.alertDialog(ctx, "Error", "Error while validating sound files...");
+        }
+    }
+
+    private static boolean validateSoundFile(SoundFile s) {
+        return new File(buildFilePath(s)).exists();
     }
 
     public static void testAllSoundFiles(Context ctx) {

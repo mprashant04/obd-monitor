@@ -86,6 +86,7 @@ public class SampleActivity extends AppCompatActivity {
         }
 
         AppAutoTerminate.init(this);
+        MultimediaUtils.checkIfAllSoundFilesPresent(this);
     }
 
     /**
