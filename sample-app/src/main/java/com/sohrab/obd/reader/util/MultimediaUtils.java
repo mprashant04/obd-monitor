@@ -24,7 +24,8 @@ public class MultimediaUtils {
         ALERT_MULTIPLE("multiple-alerts.mp3"),
         ALERT_HIGH_COOLANT_TEMP("high-engine-temp.mp3"),
         ALERT_LOW_VOLTAGE("low-voltage.mp3"),
-        ALERT_SPEED("speed-alert.mp3");
+        ALERT_SPEED("speed-alert.mp3"),
+        ALERT_OPTIMAL_COOLANT_TEMP("optimal-coolant-temp.mp3");
 
         private String fileName = "";
 

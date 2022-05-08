@@ -140,7 +140,8 @@ public class SampleActivity extends AppCompatActivity {
         txt += "---------------\n";
         txt += "Conf \n";
         txt += "---------------\n";
-        txt += "Coolant temperature alert: " + AppConfig.getCoolantAlertTemperature() + " C\n";
+        txt += "Coolant alert temperature: " + AppConfig.getCoolantAlertTemperature() + " C\n";
+        txt += "Coolant optimal temperature: " + AppConfig.getCoolantOptimalTemperature() + " C\n";
         txt += "Low Voltage alert: " + AppConfig.getLowVoltageAlertLimit() + " V\n";
         txt += "Alert interval: " + AppConfig.getAlertIntervalSeconds() + " sec\n";
         txt += "High speed alert: " + AppConfig.getHighSpeedAlertKmpl() + " Kmpl\n";

@@ -14,12 +14,12 @@ public class AppAutoTerminate {
 
         if (ObdStatus.getEngineOffSinceSeconds() > AppConfig.getAutoTerminateAfterEngineOffSeconds()) {
             Logs.info("Terminating app....");
-            MultimediaUtils.playSound(activity, MultimediaUtils.SoundFile.APP_CLOSING);
-            Utils.delay(5000);
+            //MultimediaUtils.playSound(activity, MultimediaUtils.SoundFile.APP_CLOSING);
+            //Utils.delay(5000);
 
             activity.finishAffinity();
             activity.finishAndRemoveTask();
-            Utils.delay(5000);
+            //Utils.delay(5000);
 
             System.exit(0);
         }

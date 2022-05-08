@@ -18,6 +18,7 @@ public class AlertHandler {
     private static Date lastHealthStatusSentToTaskerOn = DateUtils.addHours(new Date(), -1);
     private static Date instanciatedOn = new Date();
 
+    private static boolean coolantOptimalTemperatureReached = false;
     private static boolean engineRunning = false;
     private static boolean speedAboveLimit = false;
     private static boolean alertTriggered = false;
@@ -32,8 +33,11 @@ public class AlertHandler {
             float coolantTemp = tripRecord.getmEngineCoolantTempValue();
             double voltage = tripRecord.getmControlModuleVoltageValue();
 
-            if (!alertEngineSwitchOff(context, tripRecord)) {
+            alertEngineSwitchOff(context, tripRecord);
+
+            if (engineRunning) {
                 alertHighSpeed(context, tripRecord);
+                alertOptimalCoolantTemperature(context, tripRecord);
 
                 alertReset();
                 alertCheck(coolantTemp >= AppConfig.getCoolantAlertTemperature(), MultimediaUtils.SoundFile.ALERT_HIGH_COOLANT_TEMP, "Coolant temperature alert - " + coolantTemp);
@@ -47,15 +51,23 @@ public class AlertHandler {
         }
     }
 
-    private static boolean alertEngineSwitchOff(Context context, TripRecord tripRecord) {
+    private static void alertOptimalCoolantTemperature(Context context, TripRecord tripRecord) {
+        if (!coolantOptimalTemperatureReached) {
+            if (tripRecord.getmEngineCoolantTempValue() >= AppConfig.getCoolantOptimalTemperature()) {
+                coolantOptimalTemperatureReached = true;
+                MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ALERT_OPTIMAL_COOLANT_TEMP);
+                Logs.info(Declarations.BELL_CHAR_HTML + " Optimal coolant temperature reached - " + tripRecord.getmEngineCoolantTempValue() + " C");
+            }
+        }
+    }
+
+    private static void alertEngineSwitchOff(Context context, TripRecord tripRecord) {
         if (engineRunning && tripRecord.getEngineRpm() <= 0) {
             engineRunning = false;
             MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ENGINE_SWITCHED_OFF);
-            return true;
         } else if (!engineRunning && tripRecord.getEngineRpm() > 0) {
             engineRunning = true;
         }
-        return false;
     }
 
     private static void alertHighSpeed(Context context, TripRecord tripRecord) {

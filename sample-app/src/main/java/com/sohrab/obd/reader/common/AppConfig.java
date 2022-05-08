@@ -27,6 +27,10 @@ public class AppConfig {
         return Integer.parseInt(props.getProperty("coolant-alert-temperature", "9999"));
     }
 
+    public static int getCoolantOptimalTemperature() {
+        return Integer.parseInt(props.getProperty("coolant-optimal-temperature", "9999"));
+    }
+
     public static float getLowVoltageAlertLimit() {
         return Float.parseFloat(props.getProperty("voltage-alert", "-9999"));
     }
