@@ -26,10 +26,6 @@
             </intent-filter>
         </activity>
 
-        <receiver
-            android:name=".MyAlarmManager"
-            android:enabled="true"
-            android:exported="true" />
 
     </application>
 

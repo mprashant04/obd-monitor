@@ -32,8 +32,6 @@ import static com.sohrab.obd.reader.constants.DefineObdReader.ACTION_OBD_CONNECT
 import static com.sohrab.obd.reader.constants.DefineObdReader.ACTION_READ_OBD_REAL_TIME_DATA;
 
 /*TODO
-        notification to prevent app killing
-        auto-kill app when engine shut down - use scheduler
         send health intent to tasker??  to detect if app not running?
  */
 
@@ -87,7 +85,7 @@ public class SampleActivity extends AppCompatActivity {
             DialogUtils.alertDialog(this, "Disable the battery optimization...");
         }
 
-        MyAlarmManager.init(this);
+        AppAutoTerminate.init( this);
     }
 
     /**
