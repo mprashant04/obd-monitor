@@ -155,6 +155,8 @@ public class SampleActivity extends AppCompatActivity {
                 :
                 "");
         txt += "(" + DateUtils.format("HH:mm:ss.S", new Date()) + ")                                      v" + Declarations.APP_VER;
+
+        txt += "\n\nNOTE: Lock the app in 'Recent Apps' to prevent accidental close";
         return txt;
     }
 

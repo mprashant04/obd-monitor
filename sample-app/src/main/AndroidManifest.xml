@@ -18,15 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        /*
-        excludeFromRecents=true >> for preventing app from showing in recent apps list, hence it
-        will not get closed when clear all clicked in recent app list. But clean all is prevented
-        only when another app is opened after this app, if clear all under recent app is clicked
-        immediately after launching this app then the app is killed
-        */
+
         <activity
             android:name=".SampleActivity"
-            android:excludeFromRecents="true"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait">
             <intent-filter>
