@@ -43,9 +43,9 @@ public class AlertHandler {
                 alertCheck(coolantTemp >= AppConfig.getCoolantAlertTemperature(), MultimediaUtils.SoundFile.ALERT_HIGH_COOLANT_TEMP, "Coolant temperature alert - " + coolantTemp);
                 alertCheck(voltage <= AppConfig.getLowVoltageAlertLimit(), MultimediaUtils.SoundFile.ALERT_LOW_VOLTAGE, "Voltage low alert - " + voltage);
                 alertShow(context);
-            }
 
-            sendHealthStatusToTasker(context);   //OK health status only after all success, hence no try-catch blocks in above sub methods
+                sendHealthStatusToTasker(context);   //OK health status only after all success, hence no try-catch blocks in above sub methods
+            }
         } catch (Throwable ex) {
             Logs.error(ex);
         }
