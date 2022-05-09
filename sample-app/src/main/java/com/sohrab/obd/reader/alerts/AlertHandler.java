@@ -29,18 +29,15 @@ public class AlertHandler {
     private static final int WAIT_AFTER_ENGINE_START_FOR_COOLANT_TEMP_OPTIMAL_ALERT = WAIT_AFTER_ENGINE_START + 25;
 
 
-    public static synchronized void handle(Context context, TripRecord tripRecord) {
+    public static synchronized void handle(Context context) {
         try {
-            float coolantTemp = tripRecord.getmEngineCoolantTemp();
-            double voltage = tripRecord.getmControlModuleVoltageValue();
-
             if (VehicleStatus.engineRunningDurationSeconds() > WAIT_AFTER_ENGINE_START) {  //start alerting only after few seconds after things stabilize
-                alertHighSpeed(context, tripRecord);
-                alertOptimalCoolantTemperature(context, tripRecord);
+                alertHighSpeed(context);
+                alertOptimalCoolantTemperature(context);
 
                 alertReset();
-                alertCheck(coolantTemp >= AppConfig.getCoolantAlertTemperature(), MultimediaUtils.SoundFile.ALERT_HIGH_COOLANT_TEMP, "Coolant temperature alert - " + coolantTemp);
-                alertCheck(voltage <= AppConfig.getLowVoltageAlertLimit(), MultimediaUtils.SoundFile.ALERT_LOW_VOLTAGE, "Voltage low alert - " + voltage);
+                alertCheck(VehicleStatus.getCoolantTemperature() >= AppConfig.getCoolantAlertTemperature(), MultimediaUtils.SoundFile.ALERT_HIGH_COOLANT_TEMP, "Coolant temperature alert - " + VehicleStatus.getCoolantTemperature());
+                alertCheck(VehicleStatus.getBatteryVoltage() <= AppConfig.getLowVoltageAlertLimit(), MultimediaUtils.SoundFile.ALERT_LOW_VOLTAGE, "Voltage low alert - " + VehicleStatus.getBatteryVoltage());
                 alertShow(context);
 
                 sendHealthStatusToTasker(context);   //OK health status only after all success, hence no try-catch blocks in above sub methods
@@ -50,22 +47,21 @@ public class AlertHandler {
         }
     }
 
-    private static void alertOptimalCoolantTemperature(Context context, TripRecord tripRecord) {
+    private static void alertOptimalCoolantTemperature(Context context) {
         if (!coolantOptimalTemperatureReached) {
-            if (tripRecord.getmEngineCoolantTemp() >= AppConfig.getCoolantOptimalTemperature()) {
+            if (VehicleStatus.getCoolantTemperature() >= AppConfig.getCoolantOptimalTemperature()) {
                 coolantOptimalTemperatureReached = true;
                 if (VehicleStatus.engineRunningDurationSeconds() > WAIT_AFTER_ENGINE_START_FOR_COOLANT_TEMP_OPTIMAL_ALERT) {  //if engine was already hot on startup, don't show this alert.
                     MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ALERT_OPTIMAL_COOLANT_TEMP);
-                    Logs.info(Declarations.BELL_CHAR_HTML + " Optimal coolant temperature reached - " + tripRecord.getmEngineCoolantTemp() + " C");
+                    Logs.info(Declarations.BELL_CHAR_HTML + " Optimal coolant temperature reached - " + VehicleStatus.getCoolantTemperature() + " C");
                 }
             }
         }
     }
 
 
-    private static void alertHighSpeed(Context context, TripRecord tripRecord) {
-        int speed = tripRecord.getSpeed();
-        if (!speedAboveLimit && speed >= AppConfig.getHighSpeedAlertKmpl()) {
+    private static void alertHighSpeed(Context context) {
+        if (!speedAboveLimit && VehicleStatus.getSpeed() >= AppConfig.getHighSpeedAlertKmpl()) {
             speedAboveLimit = true;
 
             if (DateUtils.diffInSeconds(lastSpeedAlertOn) > AppConfig.getHighSpeedAlertIntervalSeconds()) {
@@ -73,7 +69,7 @@ public class AlertHandler {
                 lastSpeedAlertOn = new Date();
             }
 
-        } else if (speedAboveLimit && speed < AppConfig.getHighSpeedAlertKmpl()) {
+        } else if (speedAboveLimit && VehicleStatus.getSpeed() < AppConfig.getHighSpeedAlertKmpl()) {
             speedAboveLimit = false;
         }
     }

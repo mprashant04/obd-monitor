@@ -127,7 +127,7 @@ public class SampleActivity extends AppCompatActivity {
                 mObdInfoTextView.setText(tripRecord.toString() + getConfigText());
 
                 VehicleStatus.update(context, tripRecord);
-                AlertHandler.handle(context, tripRecord);
+                AlertHandler.handle(context);
             }
         }
     };
@@ -152,7 +152,8 @@ public class SampleActivity extends AppCompatActivity {
 
         txt += "\n";
 
-        txt += "Engine:  Running (" + VehicleStatus.engineRunningDurationSeconds() + " sec),   Stopped ("+  VehicleStatus.engineOffDurationSeconds() + " sec) \n";
+        //txt += "Engine:  Running (" + VehicleStatus.engineRunningDurationSeconds() + " sec),   Stopped ("+  VehicleStatus.engineOffDurationSeconds() + " sec) \n";
+        txt += VehicleStatus.getStatus() + "\n";
 
         txt += "(" + DateUtils.format("HH:mm:ss.S", new Date()) + ")                                      v" + Declarations.APP_VER;
 

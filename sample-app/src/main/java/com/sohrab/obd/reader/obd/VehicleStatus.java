@@ -4,7 +4,9 @@ import android.content.Context;
 
 import com.sohrab.obd.reader.trip.TripRecord;
 import com.sohrab.obd.reader.util.DateUtils;
+import com.sohrab.obd.reader.util.Logs;
 import com.sohrab.obd.reader.util.MultimediaUtils;
+import com.sohrab.obd.reader.util.StringUtils;
 
 import java.util.Date;
 
@@ -15,11 +17,36 @@ public class VehicleStatus {
     private static Date engineStartedOn = new Date();
     private static Date engineStoppedOn = new Date();
 
-    public static void update(Context context, TripRecord tripRecord) {
+    private static int coolantTemperature = 0;
+    private static int speed = 0;
+    private static double batteryVoltage = 0;
+
+    private static Date lastLoggedOn = DateUtils.addHours(new Date(), -1);
+    private static final int LOGGING_INTERVAL_SECONDS = 10;
+
+    public static synchronized void update(Context context, TripRecord tripRecord) {
         updateEngineStatus(context, tripRecord);
+        updateCoolantTemperature(context, tripRecord);
+        updateBatteryVoltage(context, tripRecord);
+        updateSpeed(context, tripRecord);
+
+        log();
     }
 
-    private static synchronized void updateEngineStatus(Context context, TripRecord tripRecord) {
+
+    private static void updateSpeed(Context context, TripRecord tripRecord) {
+        speed = tripRecord.getSpeed();
+    }
+
+    private static void updateCoolantTemperature(Context context, TripRecord tripRecord) {
+        coolantTemperature = (int) tripRecord.getmEngineCoolantTemp();
+    }
+
+    private static void updateBatteryVoltage(Context context, TripRecord tripRecord) {
+        batteryVoltage = tripRecord.getmControlModuleVoltageValue();
+    }
+
+    private static void updateEngineStatus(Context context, TripRecord tripRecord) {
         switch (engineStatus) {
             case UNKNOWN:
             case STOPPED:
@@ -41,16 +68,45 @@ public class VehicleStatus {
         }
     }
 
+    public static boolean isEngineRunning() {
+        return EngineRunningStatus.RUNNING.equals(engineStatus);
+    }
+
     public static long engineRunningDurationSeconds() {
-        if (EngineRunningStatus.RUNNING.equals(engineStatus))
+        if (isEngineRunning())
             return DateUtils.diffInSeconds(engineStartedOn);
         return -1;
     }
 
     public static long engineOffDurationSeconds() {
-        if (!EngineRunningStatus.RUNNING.equals(engineStatus))
+        if (!isEngineRunning())
             return DateUtils.diffInSeconds(engineStoppedOn);
         return -1;
     }
 
+    public static int getCoolantTemperature() {
+        return coolantTemperature;
+    }
+
+    public static double getBatteryVoltage() {
+        return batteryVoltage;
+    }
+
+    public static int getSpeed() {
+        return speed;
+    }
+
+    private static void log() {
+        if (DateUtils.diffInSeconds(lastLoggedOn) > LOGGING_INTERVAL_SECONDS) {
+            lastLoggedOn = new Date();
+            Logs.info(getStatus());
+        }
+    }
+
+    public static String getStatus() {
+        return "" + speed + " km/h,   "
+                + "" + coolantTemperature + " °C,   "
+                + "" + batteryVoltage + " V,   "
+                + "engine-" + StringUtils.capitalizeFirstCharacter(engineStatus.toString()) + " (" + engineRunningDurationSeconds() + "/" + engineOffDurationSeconds() + "sec)";
+    }
 }
