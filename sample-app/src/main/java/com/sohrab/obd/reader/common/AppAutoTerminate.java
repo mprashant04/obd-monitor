@@ -3,16 +3,14 @@ package com.sohrab.obd.reader.common;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
-
 import com.sohrab.obd.reader.obd.VehicleStatus;
 import com.sohrab.obd.reader.util.Logs;
-import com.sohrab.obd.reader.util.MultimediaUtils;
-import com.sohrab.obd.reader.util.Utils;
 
 public class AppAutoTerminate {
     private static void handle(AppCompatActivity activity) {
-        Logs.info("Auto terminate handling.... engine off since " + VehicleStatus.engineOffDurationSeconds() + " sec");
+        if (VehicleStatus.isEngineRunning()) return;
 
+        Logs.info("Auto terminate handling.... engine off since " + VehicleStatus.engineOffDurationSeconds() + " sec");
         if (VehicleStatus.engineOffDurationSeconds() > AppConfig.getAutoTerminateAfterEngineOffSeconds()) {
             Logs.info("Terminating app....");
             //MultimediaUtils.playSound(activity, MultimediaUtils.SoundFile.APP_CLOSING);

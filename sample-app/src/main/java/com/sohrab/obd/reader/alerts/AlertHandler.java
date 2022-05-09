@@ -17,7 +17,7 @@ public class AlertHandler {
 
 
     private static Date lastAlertOn = DateUtils.addHours(new Date(), -1);
-    private static Date lastSpeedAlertOn = DateUtils.addHours(new Date(), -1);
+    private static Date speedWentBelowAlertLevelOn = DateUtils.addHours(new Date(), -1);
     private static Date lastHealthStatusSentToTaskerOn = DateUtils.addHours(new Date(), -1);
 
     private static boolean coolantOptimalTemperatureReached = false;
@@ -64,13 +64,15 @@ public class AlertHandler {
         if (!speedAboveLimit && VehicleStatus.getSpeed() >= AppConfig.getHighSpeedAlertKmpl()) {
             speedAboveLimit = true;
 
-            if (DateUtils.diffInSeconds(lastSpeedAlertOn) > AppConfig.getHighSpeedAlertIntervalSeconds()) {
+            //speed need to stay below alert level for configured number of seconds, to trigger next alert
+            if (DateUtils.diffInSeconds(speedWentBelowAlertLevelOn) > AppConfig.getHighSpeedAlertIntervalSeconds()) {
+                Logs.info(Declarations.BELL_CHAR_HTML + " High speed,  " + VehicleStatus.getSpeed() + " km/h");
                 MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ALERT_SPEED);
-                lastSpeedAlertOn = new Date();
             }
 
         } else if (speedAboveLimit && VehicleStatus.getSpeed() < AppConfig.getHighSpeedAlertKmpl()) {
             speedAboveLimit = false;
+            speedWentBelowAlertLevelOn = new Date();
         }
     }
 
