@@ -47,12 +47,15 @@ public class SampleActivity extends AppCompatActivity {
 
         //MultimediaUtils.testAllSoundFiles(this);   //test only....
 
-        MultimediaUtils.playSound(this, MultimediaUtils.SoundFile.APP_STARTED);
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mObdInfoTextView = findViewById(R.id.tv_obd_info);
 
+        if (!AppConfig.validateIfAllConfigValuesPresent(this))
+            return;
+
+
+        MultimediaUtils.playSound(this, MultimediaUtils.SoundFile.APP_STARTED);
 
         //configure obd: add required command in arrayList and set to ObdConfiguration.
         //If you dont set any command or passing null, then all command OBD command will be requested.  (in case you want to read EVERYTHING)

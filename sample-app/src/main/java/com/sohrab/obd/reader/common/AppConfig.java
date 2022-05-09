@@ -1,13 +1,42 @@
 package com.sohrab.obd.reader.common;
 
+import android.support.v7.app.AppCompatActivity;
+
+import com.sohrab.obd.reader.util.DialogUtils;
 import com.sohrab.obd.reader.util.Logs;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class AppConfig {
     private static Properties props = null;
+
+    private enum SettingNames {
+        ALERT_REPEAT_INTERVAL_SECONDS("alert-repeat-interval-seconds"),
+        AUTO_TERMINATE_AFTER_ENGINE_OFF_SECONDS("auto-terminate-after-engine-off-seconds"),
+        COOLANT_ALERT_TEMPERATURE("coolant-alert-temperature"),
+        COOLANT_OPTIMAL_TEMPERATURE("coolant-optimal-temperature"),
+        HEALTH_STATUS_TO_TASKER_INTERVAL_SECONDS("health-status-to-tasker-interval-seconds"),
+        HIGH_SPEED_ALERT_INTERVAL_SECONDS("high-speed-alert-interval-seconds"),
+        HIGH_SPEED_ALERT_KMPH("high-speed-alert-kmph"),
+        OFFSET_COOLANT_TEMPERATURE("offset-coolant-temperature"),
+        OFFSET_SPEED("offset-speed"),
+        OBD_STATS_LOGGING_INTERVAL_SECONDS("obd-stats-logging-interval-seconds"),
+        VOLTAGE_ALERT("voltage-alert");
+
+        private String value = "";
+
+        SettingNames(String val) {
+            this.value = val;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
 
     static {
         loadProperties();
@@ -24,43 +53,71 @@ public class AppConfig {
     }
 
     public static int getCoolantAlertTemperature() {
-        return Integer.parseInt(props.getProperty("coolant-alert-temperature", "9999"));
+        return Integer.parseInt(props.getProperty(SettingNames.COOLANT_ALERT_TEMPERATURE.getValue(), "99999"));
     }
 
     public static int getCoolantOptimalTemperature() {
-        return Integer.parseInt(props.getProperty("coolant-optimal-temperature", "9999"));
+        return Integer.parseInt(props.getProperty(SettingNames.COOLANT_OPTIMAL_TEMPERATURE.getValue(), "99999"));
     }
 
     public static float getLowVoltageAlertLimit() {
-        return Float.parseFloat(props.getProperty("voltage-alert", "-9999"));
+        return Float.parseFloat(props.getProperty(SettingNames.VOLTAGE_ALERT.getValue(), "-99999"));
     }
 
     public static int getAlertIntervalSeconds() {
-        return Integer.parseInt(props.getProperty("alert-interval-seconds", "9999"));
+        return Integer.parseInt(props.getProperty(SettingNames.ALERT_REPEAT_INTERVAL_SECONDS.getValue(), "99999"));
     }
 
     public static int getHighSpeedAlertKmpl() {
-        return Integer.parseInt(props.getProperty("high-speed-alert", "9999"));
+        return Integer.parseInt(props.getProperty(SettingNames.HIGH_SPEED_ALERT_KMPH.getValue(), "99999"));
     }
 
     public static int getHighSpeedAlertIntervalSeconds() {
-        return Integer.parseInt(props.getProperty("high-speed-alert-interval-seconds", "9999"));
+        return Integer.parseInt(props.getProperty(SettingNames.HIGH_SPEED_ALERT_INTERVAL_SECONDS.getValue(), "99999"));
     }
 
     public static int getTaskerHealthStatusIntervalSeconds() {
-        return Integer.parseInt(props.getProperty("health-status-to-tasker-interval-seconds", "9999"));
+        return Integer.parseInt(props.getProperty(SettingNames.HEALTH_STATUS_TO_TASKER_INTERVAL_SECONDS.getValue(), "99999"));
     }
 
     public static int getAutoTerminateAfterEngineOffSeconds() {
-        return Integer.parseInt(props.getProperty("auto-terminate-after-engine-off-seconds", "9999"));
+        return Integer.parseInt(props.getProperty(SettingNames.AUTO_TERMINATE_AFTER_ENGINE_OFF_SECONDS.getValue(), "99999"));
     }
 
     public static int getOffsetSpeed() {
-        return Integer.parseInt(props.getProperty("offset-speed", "0"));
+        return Integer.parseInt(props.getProperty(SettingNames.OFFSET_SPEED.getValue(), "0"));
     }
 
     public static int getOffsetCoolantTemperature() {
-        return Integer.parseInt(props.getProperty("offset-coolant-temperature", "0"));
+        return Integer.parseInt(props.getProperty(SettingNames.OFFSET_COOLANT_TEMPERATURE.getValue(), "0"));
+    }
+
+    public static int getObdStatsLoggingIntervalSeconds() {
+        return Integer.parseInt(props.getProperty(SettingNames.OBD_STATS_LOGGING_INTERVAL_SECONDS.getValue(), "99999"));
+    }
+
+    public static boolean validateIfAllConfigValuesPresent(final AppCompatActivity ctx) {
+        String missingConf = "";
+        boolean missing = false;
+        for (SettingNames s : SettingNames.values()) {
+            if (props.get(s.getValue()) == null) {
+                missing = true;
+                missingConf += "\n   - " + s.getValue();
+            }
+        }
+
+        if (missing) {
+            Logs.error("Missing config values.... terminating app" + missingConf);
+            DialogUtils.alertDialog(ctx, "Missing Config!!!", "Following settings missing in config file, terminating application in few seconds....\n" + missingConf);
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    AppAutoTerminate.terminate(ctx);
+                }
+            }, 1000 * 20);
+        }
+
+        return !missing;
     }
 
 }

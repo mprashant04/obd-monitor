@@ -2,6 +2,7 @@ package com.sohrab.obd.reader.obd;
 
 import android.content.Context;
 
+import com.sohrab.obd.reader.common.AppConfig;
 import com.sohrab.obd.reader.common.Declarations;
 import com.sohrab.obd.reader.trip.TripRecord;
 import com.sohrab.obd.reader.util.DateUtils;
@@ -23,7 +24,6 @@ public class VehicleStatus {
     private static double batteryVoltage = 0;
 
     private static Date lastLoggedOn = DateUtils.addHours(new Date(), -1);
-    private static final int LOGGING_INTERVAL_SECONDS = 10;
 
     public static synchronized void update(Context context, TripRecord tripRecord) {
         updateEngineStatus(context, tripRecord);
@@ -99,7 +99,7 @@ public class VehicleStatus {
     }
 
     private static void log() {
-        if (DateUtils.diffInSeconds(lastLoggedOn) > LOGGING_INTERVAL_SECONDS) {
+        if (DateUtils.diffInSeconds(lastLoggedOn) >= AppConfig.getObdStatsLoggingIntervalSeconds()) {
             lastLoggedOn = new Date();
             Logs.info(getStatus());
         }

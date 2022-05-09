@@ -12,16 +12,20 @@ public class AppAutoTerminate {
 
         Logs.info("Auto terminate handling.... engine off since " + VehicleStatus.engineOffDurationSeconds() + " sec");
         if (VehicleStatus.engineOffDurationSeconds() > AppConfig.getAutoTerminateAfterEngineOffSeconds()) {
-            Logs.info("Terminating app....");
-            //MultimediaUtils.playSound(activity, MultimediaUtils.SoundFile.APP_CLOSING);
-            //Utils.delay(5000);
-
-            activity.finishAffinity();
-            activity.finishAndRemoveTask();
-            //Utils.delay(5000);
-
-            System.exit(0);
+            terminate(activity);
         }
+    }
+
+    public static void terminate(AppCompatActivity activity) {
+        Logs.info("Terminating app....");
+        //MultimediaUtils.playSound(activity, MultimediaUtils.SoundFile.APP_CLOSING);
+        //Utils.delay(5000);
+
+        activity.finishAffinity();
+        activity.finishAndRemoveTask();
+        //Utils.delay(5000);
+
+        System.exit(0);
     }
 
     public static void init(final AppCompatActivity activity) {
