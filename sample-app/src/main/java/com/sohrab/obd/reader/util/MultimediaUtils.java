@@ -15,6 +15,10 @@ import static android.media.AudioManager.STREAM_RING;
 
 public class MultimediaUtils {
 
+    public enum LogLevel {INFO, WARN, ERROR}
+
+    private static final String BELL_CHAR_HTML = "&#128276;";
+
     public enum SoundFile {
         ENGINE_SWITCHED_OFF("engine-off.mp3"),
         ENGINE_SWITCHED_ON("engine-on.mp3"),
@@ -41,6 +45,28 @@ public class MultimediaUtils {
 
 
     private static MediaPlayer player = null;
+
+    public static synchronized void playSound(Context ctx, SoundFile file, String logMessage) {
+        playSound(ctx, file, logMessage, LogLevel.INFO);
+    }
+
+    public static synchronized void playSound(Context ctx, SoundFile file, String logMessage, LogLevel logLevel) {
+        logMessage = BELL_CHAR_HTML + "" + logMessage;
+        switch (logLevel) {
+            case INFO:
+                Logs.info(logMessage);
+                break;
+            case WARN:
+                Logs.warn(logMessage);
+                break;
+            case ERROR:
+                Logs.error(logMessage);
+                break;
+            default:
+                Logs.error("INVALID LOG MODE!!!!    >>  " + logMessage);
+        }
+        playSound(ctx, file);
+    }
 
     public static synchronized void playSound(Context ctx, SoundFile file) {
         AssetManager am;

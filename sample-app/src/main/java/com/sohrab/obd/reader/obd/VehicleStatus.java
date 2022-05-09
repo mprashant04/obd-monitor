@@ -53,8 +53,7 @@ public class VehicleStatus {
             case STOPPED:
                 if (tripRecord.getEngineRpm() > 0) {
                     if (EngineRunningStatus.STOPPED.equals(engineStatus)) {
-                        MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ENGINE_SWITCHED_ON);
-                        Logs.info(Declarations.BELL_CHAR_HTML + " Engine started");
+                        MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ENGINE_SWITCHED_ON,"Engine started");
                     }
                     engineStatus = EngineRunningStatus.RUNNING;
                     engineStartedOn = new Date();
@@ -63,8 +62,7 @@ public class VehicleStatus {
 
             case RUNNING:
                 if (tripRecord.getEngineRpm() <= 0) {
-                    MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ENGINE_SWITCHED_OFF);
-                    Logs.info(Declarations.BELL_CHAR_HTML + " Engine stopped");
+                    MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ENGINE_SWITCHED_OFF, "Engine stopped");
                     engineStatus = EngineRunningStatus.STOPPED;
                     engineStoppedOn = new Date();
                 }

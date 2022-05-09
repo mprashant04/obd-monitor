@@ -4,9 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.sohrab.obd.reader.common.AppConfig;
-import com.sohrab.obd.reader.common.Declarations;
 import com.sohrab.obd.reader.obd.VehicleStatus;
-import com.sohrab.obd.reader.trip.TripRecord;
 import com.sohrab.obd.reader.util.DateUtils;
 import com.sohrab.obd.reader.util.Logs;
 import com.sohrab.obd.reader.util.MultimediaUtils;
@@ -24,6 +22,7 @@ public class AlertHandler {
     private static boolean speedAboveLimit = false;
     private static boolean alertTriggered = false;
     private static MultimediaUtils.SoundFile alertSoundFilename = null;
+    private static String alertMessage = "";
 
     private static final int WAIT_AFTER_ENGINE_START = 5;
     private static final int WAIT_AFTER_ENGINE_START_FOR_COOLANT_TEMP_OPTIMAL_ALERT = WAIT_AFTER_ENGINE_START + 25;
@@ -52,8 +51,7 @@ public class AlertHandler {
             if (VehicleStatus.getCoolantTemperature() >= AppConfig.getCoolantOptimalTemperature()) {
                 coolantOptimalTemperatureReached = true;
                 if (VehicleStatus.engineRunningDurationSeconds() > WAIT_AFTER_ENGINE_START_FOR_COOLANT_TEMP_OPTIMAL_ALERT) {  //if engine was already hot on startup, don't show this alert.
-                    MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ALERT_OPTIMAL_COOLANT_TEMP);
-                    Logs.info(Declarations.BELL_CHAR_HTML + " Optimal coolant temperature reached - " + VehicleStatus.getCoolantTemperature() + " C");
+                    MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ALERT_OPTIMAL_COOLANT_TEMP, "Optimal coolant temperature reached  " + VehicleStatus.getCoolantTemperature() + " C");
                 }
             }
         }
@@ -66,8 +64,7 @@ public class AlertHandler {
 
             //speed need to stay below alert level for configured number of seconds, to trigger next alert
             if (DateUtils.diffInSeconds(speedWentBelowAlertLevelOn) > AppConfig.getHighSpeedAlertIntervalSeconds()) {
-                Logs.info(Declarations.BELL_CHAR_HTML + " High speed,  " + VehicleStatus.getSpeed() + " km/h");
-                MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ALERT_SPEED);
+                MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ALERT_SPEED, "High speed  " + VehicleStatus.getSpeed() + " km/h");
             }
 
         } else if (speedAboveLimit && VehicleStatus.getSpeed() < AppConfig.getHighSpeedAlertKmpl()) {
@@ -78,14 +75,15 @@ public class AlertHandler {
 
     private static void alertShow(Context context) {
         if (alertTriggered && DateUtils.diffInSeconds(lastAlertOn) > AppConfig.getAlertIntervalSeconds()) {
-            MultimediaUtils.playSound(context, alertSoundFilename);
+            MultimediaUtils.playSound(context, alertSoundFilename, alertMessage, MultimediaUtils.LogLevel.WARN);
             lastAlertOn = new Date();
         }
     }
 
     private static void alertCheck(boolean alertCondition, MultimediaUtils.SoundFile soundFileName, String logMessage) {
         if (alertCondition) {
-            Logs.warn(Declarations.BELL_CHAR_HTML + " " + logMessage);
+            if (alertMessage.length() > 0) alertMessage += ",   ";
+            alertMessage += logMessage;
 
             if (!alertTriggered) {
                 alertTriggered = true;
@@ -98,6 +96,7 @@ public class AlertHandler {
 
     private static void alertReset() {
         alertTriggered = false;
+        alertMessage = "";
     }
 
 

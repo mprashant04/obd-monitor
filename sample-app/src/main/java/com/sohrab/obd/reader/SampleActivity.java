@@ -113,11 +113,9 @@ public class SampleActivity extends AppCompatActivity {
                 Toast.makeText(SampleActivity.this, connectionStatusMsg, Toast.LENGTH_SHORT).show();
 
                 if (connectionStatusMsg.equals(getString(R.string.obd_connected))) {
-                    Logs.info("OBD device connected -------------------");
-                    MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.OBD_DEVICE_CONNECTED);
+                    MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.OBD_DEVICE_CONNECTED, "OBD device connected");
                 } else if (connectionStatusMsg.equals(getString(R.string.connect_lost))) {
-                    Logs.info("OBD device dis-connected -------------------");
-                    MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.OBD_DEVICE_DISCONNECTED);
+                    MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.OBD_DEVICE_DISCONNECTED, "OBD device dis-connected");
                 } else {
                     // here you could check OBD connection and pairing status
                 }
