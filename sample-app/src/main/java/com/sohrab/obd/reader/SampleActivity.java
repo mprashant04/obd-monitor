@@ -70,6 +70,7 @@ public class SampleActivity extends AppCompatActivity {
         //float gasPrice = 7; // per litre, you should initialize according to your requirement.
         //ObdPreferences.get(this).setGasPrice(gasPrice);
 
+        //TODO should this be MULTIPLIER offset instead of ADDITION affset? test what's diff at various speeds
         ObdPreferences.get(this).setOffsetVehicleSpeed(AppConfig.getOffsetSpeed());
         ObdPreferences.get(this).setOffsetCoolantTemperature(AppConfig.getOffsetCoolantTemperature());
 

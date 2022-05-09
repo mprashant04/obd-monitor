@@ -13,13 +13,15 @@ import com.sohrab.obd.reader.util.MultimediaUtils;
 import java.util.Date;
 
 public class AlertHandler {
+    enum EngineRunningStatus {RUNNING, STOPPED, UNKNOWN}
+
     private static Date lastAlertOn = DateUtils.addHours(new Date(), -1);
     private static Date lastSpeedAlertOn = DateUtils.addHours(new Date(), -1);
     private static Date lastHealthStatusSentToTaskerOn = DateUtils.addHours(new Date(), -1);
     private static Date instanciatedOn = new Date();
 
     private static boolean coolantOptimalTemperatureReached = false;
-    private static boolean engineRunning = false;
+    private static EngineRunningStatus engineRunning = EngineRunningStatus.UNKNOWN;
     private static boolean speedAboveLimit = false;
     private static boolean alertTriggered = false;
     private static MultimediaUtils.SoundFile alertSoundFilename = null;
@@ -33,9 +35,9 @@ public class AlertHandler {
             float coolantTemp = tripRecord.getmEngineCoolantTemp();
             double voltage = tripRecord.getmControlModuleVoltageValue();
 
-            alertEngineSwitchOff(context, tripRecord);
+            alertEngineStatusChange(context, tripRecord);
 
-            if (engineRunning) {
+            if (engineRunning.equals(EngineRunningStatus.RUNNING)) {
                 alertHighSpeed(context, tripRecord);
                 alertOptimalCoolantTemperature(context, tripRecord);
 
@@ -61,12 +63,23 @@ public class AlertHandler {
         }
     }
 
-    private static void alertEngineSwitchOff(Context context, TripRecord tripRecord) {
-        if (engineRunning && tripRecord.getEngineRpm() <= 0) {
-            engineRunning = false;
-            MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ENGINE_SWITCHED_OFF);
-        } else if (!engineRunning && tripRecord.getEngineRpm() > 0) {
-            engineRunning = true;
+    private static void alertEngineStatusChange(Context context, TripRecord tripRecord) {
+        switch (engineRunning) {
+            case UNKNOWN:
+            case STOPPED:
+                if (tripRecord.getEngineRpm() > 0) {
+                    if (engineRunning.equals(EngineRunningStatus.STOPPED))
+                        MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ENGINE_SWITCHED_ON);
+                    engineRunning = EngineRunningStatus.RUNNING;
+                }
+                break;
+
+            case RUNNING:
+                if (tripRecord.getEngineRpm() <= 0) {
+                    MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ENGINE_SWITCHED_OFF);
+                    engineRunning = EngineRunningStatus.STOPPED;
+                }
+                break;
         }
     }
 
