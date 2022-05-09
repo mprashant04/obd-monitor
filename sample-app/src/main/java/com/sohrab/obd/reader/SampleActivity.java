@@ -15,7 +15,7 @@ import com.sohrab.obd.reader.application.ObdPreferences;
 import com.sohrab.obd.reader.common.AppAutoTerminate;
 import com.sohrab.obd.reader.common.AppConfig;
 import com.sohrab.obd.reader.common.Declarations;
-import com.sohrab.obd.reader.obd.ObdStatus;
+import com.sohrab.obd.reader.obd.VehicleStatus;
 import com.sohrab.obd.reader.obdCommand.ObdCommand;
 import com.sohrab.obd.reader.obdCommand.ObdConfiguration;
 import com.sohrab.obd.reader.obdCommand.SpeedCommand;
@@ -126,19 +126,12 @@ public class SampleActivity extends AppCompatActivity {
                 TripRecord tripRecord = TripRecord.getTripRecode(SampleActivity.this);
                 mObdInfoTextView.setText(tripRecord.toString() + getConfigText());
 
+                VehicleStatus.update(context, tripRecord);
                 AlertHandler.handle(context, tripRecord);
-
-                if (tripRecord.getEngineRpm() > 0) ObdStatus.engineRunning();
-
             }
         }
     };
 
-    private void terminateAppIfDisconnectedForLong(Context context, String connectionStatusMsg) {
-        if (!connectionStatusMsg.equals(getString(R.string.obd_connected))) {
-
-        }
-    }
 
     private String getConfigText() {
         String txt = "";
@@ -159,10 +152,8 @@ public class SampleActivity extends AppCompatActivity {
 
         txt += "\n";
 
-        txt += (ObdStatus.getEngineOffSinceSeconds() > 5
-                ? "Engine off since " + ObdStatus.getEngineOffSinceSeconds() + " sec\n"
-                :
-                "");
+        txt += "Engine:  Running (" + VehicleStatus.engineRunningDurationSeconds() + " sec),   Stopped ("+  VehicleStatus.engineOffDurationSeconds() + " sec) \n";
+
         txt += "(" + DateUtils.format("HH:mm:ss.S", new Date()) + ")                                      v" + Declarations.APP_VER;
 
         txt += "\n\nNOTE: Lock the app in 'Recent Apps' to prevent accidental close";

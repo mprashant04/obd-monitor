@@ -5,6 +5,7 @@ import android.content.Intent;
 
 import com.sohrab.obd.reader.common.AppConfig;
 import com.sohrab.obd.reader.common.Declarations;
+import com.sohrab.obd.reader.obd.VehicleStatus;
 import com.sohrab.obd.reader.trip.TripRecord;
 import com.sohrab.obd.reader.util.DateUtils;
 import com.sohrab.obd.reader.util.Logs;
@@ -13,31 +14,27 @@ import com.sohrab.obd.reader.util.MultimediaUtils;
 import java.util.Date;
 
 public class AlertHandler {
-    enum EngineRunningStatus {RUNNING, STOPPED, UNKNOWN}
+
 
     private static Date lastAlertOn = DateUtils.addHours(new Date(), -1);
     private static Date lastSpeedAlertOn = DateUtils.addHours(new Date(), -1);
     private static Date lastHealthStatusSentToTaskerOn = DateUtils.addHours(new Date(), -1);
-    private static Date instanciatedOn = new Date();
 
     private static boolean coolantOptimalTemperatureReached = false;
-    private static EngineRunningStatus engineRunning = EngineRunningStatus.UNKNOWN;
     private static boolean speedAboveLimit = false;
     private static boolean alertTriggered = false;
     private static MultimediaUtils.SoundFile alertSoundFilename = null;
 
+    private static final int WAIT_AFTER_ENGINE_START = 5;
+    private static final int WAIT_AFTER_ENGINE_START_FOR_COOLANT_TEMP_OPTIMAL_ALERT = WAIT_AFTER_ENGINE_START + 25;
+
 
     public static synchronized void handle(Context context, TripRecord tripRecord) {
         try {
-            if (DateUtils.diffInSeconds(instanciatedOn) < 5)
-                return;  //skip alerts for first few seconds, to prevent false alerts
-
             float coolantTemp = tripRecord.getmEngineCoolantTemp();
             double voltage = tripRecord.getmControlModuleVoltageValue();
 
-            alertEngineStatusChange(context, tripRecord);
-
-            if (engineRunning.equals(EngineRunningStatus.RUNNING)) {
+            if (VehicleStatus.engineRunningDurationSeconds() > WAIT_AFTER_ENGINE_START) {  //start alerting only after few seconds after things stabilize
                 alertHighSpeed(context, tripRecord);
                 alertOptimalCoolantTemperature(context, tripRecord);
 
@@ -57,31 +54,14 @@ public class AlertHandler {
         if (!coolantOptimalTemperatureReached) {
             if (tripRecord.getmEngineCoolantTemp() >= AppConfig.getCoolantOptimalTemperature()) {
                 coolantOptimalTemperatureReached = true;
-                MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ALERT_OPTIMAL_COOLANT_TEMP);
-                Logs.info(Declarations.BELL_CHAR_HTML + " Optimal coolant temperature reached - " + tripRecord.getmEngineCoolantTemp() + " C");
+                if (VehicleStatus.engineRunningDurationSeconds() > WAIT_AFTER_ENGINE_START_FOR_COOLANT_TEMP_OPTIMAL_ALERT) {  //if engine was already hot on startup, don't show this alert.
+                    MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ALERT_OPTIMAL_COOLANT_TEMP);
+                    Logs.info(Declarations.BELL_CHAR_HTML + " Optimal coolant temperature reached - " + tripRecord.getmEngineCoolantTemp() + " C");
+                }
             }
         }
     }
 
-    private static void alertEngineStatusChange(Context context, TripRecord tripRecord) {
-        switch (engineRunning) {
-            case UNKNOWN:
-            case STOPPED:
-                if (tripRecord.getEngineRpm() > 0) {
-                    if (engineRunning.equals(EngineRunningStatus.STOPPED))
-                        MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ENGINE_SWITCHED_ON);
-                    engineRunning = EngineRunningStatus.RUNNING;
-                }
-                break;
-
-            case RUNNING:
-                if (tripRecord.getEngineRpm() <= 0) {
-                    MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ENGINE_SWITCHED_OFF);
-                    engineRunning = EngineRunningStatus.STOPPED;
-                }
-                break;
-        }
-    }
 
     private static void alertHighSpeed(Context context, TripRecord tripRecord) {
         int speed = tripRecord.getSpeed();
