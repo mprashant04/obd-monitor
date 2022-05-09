@@ -30,7 +30,7 @@ public class AlertHandler {
             if (DateUtils.diffInSeconds(instanciatedOn) < 5)
                 return;  //skip alerts for first few seconds, to prevent false alerts
 
-            float coolantTemp = tripRecord.getmEngineCoolantTempValue();
+            float coolantTemp = tripRecord.getmEngineCoolantTemp();
             double voltage = tripRecord.getmControlModuleVoltageValue();
 
             alertEngineSwitchOff(context, tripRecord);
@@ -53,10 +53,10 @@ public class AlertHandler {
 
     private static void alertOptimalCoolantTemperature(Context context, TripRecord tripRecord) {
         if (!coolantOptimalTemperatureReached) {
-            if (tripRecord.getmEngineCoolantTempValue() >= AppConfig.getCoolantOptimalTemperature()) {
+            if (tripRecord.getmEngineCoolantTemp() >= AppConfig.getCoolantOptimalTemperature()) {
                 coolantOptimalTemperatureReached = true;
                 MultimediaUtils.playSound(context, MultimediaUtils.SoundFile.ALERT_OPTIMAL_COOLANT_TEMP);
-                Logs.info(Declarations.BELL_CHAR_HTML + " Optimal coolant temperature reached - " + tripRecord.getmEngineCoolantTempValue() + " C");
+                Logs.info(Declarations.BELL_CHAR_HTML + " Optimal coolant temperature reached - " + tripRecord.getmEngineCoolantTemp() + " C");
             }
         }
     }

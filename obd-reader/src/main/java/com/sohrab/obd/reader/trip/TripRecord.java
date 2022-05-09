@@ -107,7 +107,6 @@ public class TripRecord implements DefineObdReader {
     private float mIntakePressure = 0.0f;
     private String mFaultCodes = "";
     private String mAmbientAirTemp;
-    private String mEngineCoolantTemp;
     private float mEngineCoolantTempValue;
     private String mEngineOilTemp;
     private String mFuelConsumptionRate;
@@ -154,6 +153,10 @@ public class TripRecord implements DefineObdReader {
     }
 
     public void setSpeed(Integer currentSpeed) {
+
+        if (currentSpeed > 0)
+            currentSpeed += (int) ObdPreferences.get(sContext.getApplicationContext()).getOffsetVehicleSpeed();
+
         calculateIdlingAndDrivingTime(currentSpeed);
         findRapidAccAndDeclTimes(currentSpeed);
         speed = currentSpeed;
@@ -380,8 +383,7 @@ public class TripRecord implements DefineObdReader {
                 break;
 
             case ENGINE_COOLANT_TEMP:
-                mEngineCoolantTemp = command.getFormattedResult();
-                mEngineCoolantTempValue = ((TemperatureCommand) command).getTemperature();
+                setmEngineCoolantTemp(((TemperatureCommand) command).getTemperature());
                 break;
 
             case ENGINE_OIL_TEMP:
@@ -531,12 +533,14 @@ public class TripRecord implements DefineObdReader {
         return mAmbientAirTemp;
     }
 
-    public String getmEngineCoolantTemp() {
-        return mEngineCoolantTemp;
+    public float getmEngineCoolantTemp() {
+        return mEngineCoolantTempValue;
     }
 
-    public float getmEngineCoolantTempValue() {
-        return mEngineCoolantTempValue;
+    public void setmEngineCoolantTemp(float value) {
+        if (value > 0)
+            value += (int) ObdPreferences.get(sContext.getApplicationContext()).getOffsetCoolantTemperature();
+        mEngineCoolantTempValue = value;
     }
 
     public String getmEngineOilTemp() {
@@ -680,7 +684,7 @@ public class TripRecord implements DefineObdReader {
         return "OBD data ::" +
                 "\n" + AvailableCommandNames.SPEED.getValue() + ":  " + speed + " km/h" +
                 "\n" + AvailableCommandNames.ENGINE_RPM.getValue() + ":  " + engineRpm +
-                "\n" + AvailableCommandNames.ENGINE_COOLANT_TEMP.getValue() + ":  " + mEngineCoolantTemp +
+                "\n" + AvailableCommandNames.ENGINE_COOLANT_TEMP.getValue() + ":  " + mEngineCoolantTempValue +
 
                 "\n" + AvailableCommandNames.ENGINE_RUNTIME.getValue() + ":  " + engineRuntime + "hh:mm:ss" +
                 "\n" + AvailableCommandNames.TROUBLE_CODES.getValue() + ":  " + mFaultCodes +

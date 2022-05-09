@@ -30,19 +30,19 @@ public class ObdPreferences implements PreferencesConstants {
     }
 
     /**
-     *
      * @return: instance of ObdPreferences
      */
     public static ObdPreferences get(Context context) {
         if (mInstance == null) {
             init(context);
-          //  ObdReaderApplication.getInstance().initPreferences();
+            //  ObdReaderApplication.getInstance().initPreferences();
         }
         return mInstance;
     }
 
     /**
      * static method to create instance of ObdPreferences
+     *
      * @param context
      * @return instance of ObdPreferences
      */
@@ -70,8 +70,6 @@ public class ObdPreferences implements PreferencesConstants {
     public void setFaultCode(String faultCode) {
         mEditor.putString(FAULT_CODE, faultCode).commit();
     }
-
-
 
 
     public boolean getIsOBDconnected() {
@@ -112,6 +110,25 @@ public class ObdPreferences implements PreferencesConstants {
 
     public void setFuelType(float value) {
         mEditor.putFloat(FUEL_TYPE_VALUE, value).commit();
+    }
+
+
+    //Prashant: introduced this to adjust speed difference in seltos
+    public float getOffsetVehicleSpeed() {
+        return mPrefs.getFloat(OFFSET_VEHICLE_SPEED, 0.0f);
+    }
+
+    public void setOffsetVehicleSpeed(float offset) {
+        mEditor.putFloat(OFFSET_VEHICLE_SPEED, offset).commit();
+    }
+
+    //Prashant: introduced this to adjust speed difference in seltos
+    public float getOffsetCoolantTemperature() {
+        return mPrefs.getFloat(OFFSET_COOLANT_TEMPERATURE, 0.0f);
+    }
+
+    public void setOffsetCoolantTemperature(float offset) {
+        mEditor.putFloat(OFFSET_COOLANT_TEMPERATURE, offset).commit();
     }
 
 

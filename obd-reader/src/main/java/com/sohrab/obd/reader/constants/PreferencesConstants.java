@@ -14,5 +14,7 @@ public interface PreferencesConstants {
     String SERVICE_RUNNING_STATUS = "SERVICE_RUNNING_STATUS";
     String FUEL_TYPE_VALUE = "FUEL_TYPE_VALUE";
 
+    String OFFSET_VEHICLE_SPEED = "offset_vehiche_speed";
+    String OFFSET_COOLANT_TEMPERATURE = "offset_coolant_temperature";
 }
 

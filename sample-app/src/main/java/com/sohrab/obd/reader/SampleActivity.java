@@ -67,8 +67,13 @@ public class SampleActivity extends AppCompatActivity {
 
 
         // set gas price per litre so that gas cost can calculated. Default is 7 $/l
-        float gasPrice = 7; // per litre, you should initialize according to your requirement.
-        ObdPreferences.get(this).setGasPrice(gasPrice);
+        //float gasPrice = 7; // per litre, you should initialize according to your requirement.
+        //ObdPreferences.get(this).setGasPrice(gasPrice);
+
+        ObdPreferences.get(this).setOffsetVehicleSpeed(AppConfig.getOffsetSpeed());
+        ObdPreferences.get(this).setOffsetCoolantTemperature(AppConfig.getOffsetCoolantTemperature());
+
+
         /**
          * Register receiver with some action related to OBD connection status
          */
@@ -148,6 +153,8 @@ public class SampleActivity extends AppCompatActivity {
         txt += "High speed alert delay: " + AppConfig.getHighSpeedAlertIntervalSeconds() + " sec\n";
         txt += "Tasker health status interval: " + AppConfig.getTaskerHealthStatusIntervalSeconds() + " sec\n";
         txt += "Auto terminate after engine off: " + AppConfig.getAutoTerminateAfterEngineOffSeconds() + " sec\n";
+        txt += "Offset speed: " + AppConfig.getOffsetSpeed() + "\n";
+        txt += "Offset coolant temperature: " + AppConfig.getOffsetCoolantTemperature() + "\n";
 
         txt += "\n";
 

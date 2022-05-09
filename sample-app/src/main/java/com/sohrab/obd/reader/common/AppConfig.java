@@ -55,4 +55,12 @@ public class AppConfig {
         return Integer.parseInt(props.getProperty("auto-terminate-after-engine-off-seconds", "9999"));
     }
 
+    public static int getOffsetSpeed() {
+        return Integer.parseInt(props.getProperty("offset-speed", "0"));
+    }
+
+    public static int getOffsetCoolantTemperature() {
+        return Integer.parseInt(props.getProperty("offset-coolant-temperature", "0"));
+    }
+
 }
