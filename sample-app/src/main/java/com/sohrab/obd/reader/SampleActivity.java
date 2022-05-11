@@ -43,7 +43,6 @@ public class SampleActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Utils.checkExternalStorageAccess(this);
-        Logs.info("App Opened ====================================================================");
 
         //MultimediaUtils.testAllSoundFiles(this);   //test only....
 
@@ -55,7 +54,7 @@ public class SampleActivity extends AppCompatActivity {
             return;
 
 
-        MultimediaUtils.playSound(this, MultimediaUtils.SoundFile.APP_STARTED);
+        MultimediaUtils.playSound(this, MultimediaUtils.SoundFile.APP_STARTED, "App started =================================");
 
         //configure obd: add required command in arrayList and set to ObdConfiguration.
         //If you dont set any command or passing null, then all command OBD command will be requested.  (in case you want to read EVERYTHING)
