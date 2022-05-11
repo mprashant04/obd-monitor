@@ -112,7 +112,7 @@ public class MultimediaUtils {
                 player.stop();
             }
         } catch (Throwable e) {
-            Logs.error(e);
+            //Logs.error(e);
         }
     }
 
