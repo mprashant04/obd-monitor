@@ -29,6 +29,7 @@ import com.sohrab.obd.reader.util.DialogUtils;
 import com.sohrab.obd.reader.util.Logs;
 import com.sohrab.obd.reader.util.MultimediaUtils;
 import com.sohrab.obd.reader.util.Utils;
+import com.sohrab.wifi.WifiScanner;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,6 +40,7 @@ import static com.sohrab.obd.reader.constants.DefineObdReader.ACTION_READ_OBD_RE
 public class SampleActivity extends AppCompatActivity {
 
     private TextView mObdInfoTextView;
+    private WifiScanner wifiScanner = new WifiScanner();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +52,14 @@ public class SampleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mObdInfoTextView = findViewById(R.id.tv_obd_info);
 
+        final AppCompatActivity ctx = this;
+
+
         if (!AppConfig.validateIfAllConfigValuesPresent(this))
             return;
 
+        if (!Utils.checkRequiredPermissions(this))
+            return;
 
         MultimediaUtils.playSound(this, MultimediaUtils.SoundFile.APP_STARTED, "App started =================================");
 
@@ -92,6 +99,8 @@ public class SampleActivity extends AppCompatActivity {
         if (Utils.isBatteryOptimizationEnabled(this)) {
             DialogUtils.alertDialog(this, "Disable the battery optimization...");
         }
+
+        wifiScanner.init(this);
 
         AppAutoTerminate.init(this);
         MultimediaUtils.checkIfAllSoundFilesPresent(this);

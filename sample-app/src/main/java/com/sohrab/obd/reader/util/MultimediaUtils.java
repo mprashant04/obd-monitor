@@ -30,7 +30,11 @@ public class MultimediaUtils {
         ALERT_HIGH_COOLANT_TEMP("high-engine-temp.mp3"),
         ALERT_LOW_VOLTAGE("low-voltage.mp3"),
         ALERT_SPEED("speed-alert.mp3"),
-        ALERT_OPTIMAL_COOLANT_TEMP("optimal-coolant-temp.mp3");
+        ALERT_OPTIMAL_COOLANT_TEMP("optimal-coolant-temp.mp3"),
+        DM_OK("dm_ok.mp3"),
+        DM_FAILED_BOTH("dm_fail_both.mp3"),
+        DM_FAILED_FRONT("dm_fail_front.mp3"),
+        DM_FAILED_REAR("dm_fail_rear.mp3");
 
         private String fileName = "";
 

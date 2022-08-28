@@ -25,7 +25,14 @@ public class AppConfig {
         OFFSET_COOLANT_TEMPERATURE("offset-coolant-temperature"),
         OFFSET_SPEED("offset-speed"),
         OBD_STATS_LOGGING_INTERVAL_SECONDS("obd-stats-logging-interval-seconds"),
-        VOLTAGE_ALERT("voltage-alert");
+        VOLTAGE_ALERT("voltage-alert"),
+
+        //--------- DashCam monitoring settings -------------------
+        DM_ENABLED("dm-enabled"),
+        DM_SSID_FRONT("dm-ssid-front"),
+        DM_SSID_REAR("dm-ssid-rear"),
+        DM_SSID_MARK_OFFLINE_AFTER_SECONDS("dm-ssid-mark-offline-after-seconds"),
+        DM_ALERT_INTERVAL_SECONDS("dm-alert-interval-seconds");
 
         private String value = "";
 
@@ -96,6 +103,27 @@ public class AppConfig {
         return Integer.parseInt(props.getProperty(SettingNames.OBD_STATS_LOGGING_INTERVAL_SECONDS.getValue(), "99999"));
     }
 
+    public static boolean isDmEnabled() {
+        return Integer.parseInt(props.getProperty(SettingNames.DM_ENABLED.getValue(), "0")) == 1;
+    }
+
+    public static String getDmSsidFront() {
+        return props.getProperty(SettingNames.DM_SSID_FRONT.getValue(), "").trim();
+    }
+
+    public static String getDmSsidRear() {
+        return props.getProperty(SettingNames.DM_SSID_REAR.getValue(), "").trim();
+    }
+
+    public static int getDmSsidMarkOfflineAfterSeconds() {
+        return Integer.parseInt(props.getProperty(SettingNames.DM_SSID_MARK_OFFLINE_AFTER_SECONDS.getValue(), "60"));
+    }
+
+    public static int getDmAlertIntervalSeconds() {
+        return Integer.parseInt(props.getProperty(SettingNames.DM_ALERT_INTERVAL_SECONDS.getValue(), "120"));
+    }
+
+
     public static boolean validateIfAllConfigValuesPresent(final AppCompatActivity ctx) {
         String missingConf = "";
         boolean missing = false;
@@ -108,7 +136,8 @@ public class AppConfig {
 
         if (missing) {
             Logs.error("Missing config values.... terminating app" + missingConf);
-            DialogUtils.alertDialog(ctx, "Missing Config!!!", "Following settings missing in config file, terminating application in few seconds....\n" + missingConf);
+            DialogUtils.alertDialog(ctx, "Missing Config!!!", "Following settings missing in config file, terminating app in few seconds....\n" + missingConf);
+
             new Timer().schedule(new TimerTask() {
                 @Override
                 public void run() {

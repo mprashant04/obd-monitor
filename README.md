@@ -14,4 +14,8 @@ Created from this open source project: https://github.com/md-sohrab-alam/android
      - Voices: Salli, Female
      - voice settings: +20 dB
      - voice effect: DRC
-
+- Another settings (latest)
+     - AI Engine: Neutral TTS
+     - Language - English, Indian
+     - Voices: Tanvi, Female
+     - voice settings volume: +20 dB
