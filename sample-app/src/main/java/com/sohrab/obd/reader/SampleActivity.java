@@ -52,8 +52,6 @@ public class SampleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mObdInfoTextView = findViewById(R.id.tv_obd_info);
 
-        final AppCompatActivity ctx = this;
-
 
         if (!AppConfig.validateIfAllConfigValuesPresent(this))
             return;
