@@ -84,6 +84,8 @@ public class WifiValidator {
         try {
             synchronized (this) {
 
+                String oldStatusSummary = getStatusSumamryString();
+
                 for (ScanResult r : results) {
                     lastOnlineTime_front = checkIfOnline(r, AppConfig.getDmSsidFront(), lastOnlineTime_front);
                     lastOnlineTime_rear = checkIfOnline(r, AppConfig.getDmSsidRear(), lastOnlineTime_rear);
@@ -91,7 +93,7 @@ public class WifiValidator {
 
                 String ssids = "";
                 for (ScanResult r : results) ssids += r.SSID + ", ";
-                Logs.info(LOG_PREFIX + "Updated (" + getStatusSumamryString() + ") (" + ssids + ")");
+                Logs.info(LOG_PREFIX + "Updated (" + oldStatusSummary + ")->(" + getStatusSumamryString() + ") (" + ssids + ")");
 
             }
         } catch (Throwable ex) {
