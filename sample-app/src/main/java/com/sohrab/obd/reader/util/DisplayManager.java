@@ -11,10 +11,12 @@ public class DisplayManager {
         //powerManager.isInteractive()
         //wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyApp::MyWakelockTag");
 
-        PowerManager.WakeLock wl = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "MyApp::MyLock");
-        wl.acquire(timeout);
-        PowerManager.WakeLock wl_cpu = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyApp::MyCpuLock");
-        wl_cpu.acquire(timeout);
+        //if (!powerManager.isInteractive()) {
+            PowerManager.WakeLock wl = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, "MyApp::MyLock");
+            wl.acquire(timeout);
+            PowerManager.WakeLock wl_cpu = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyApp::MyCpuLock");
+            wl_cpu.acquire(timeout);
+        //}
     }
 
 }

@@ -78,6 +78,7 @@ public class WifiScanner {
 
             lastScannedOn = new Date();
 
+            //looks like wifi scanning resumes when display is awakened
             DisplayManager.wakeupScreen(context, 5000);
             Utils.delay(2000);
 
