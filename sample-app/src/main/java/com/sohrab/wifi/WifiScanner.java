@@ -11,6 +11,7 @@ import com.sohrab.obd.reader.common.AppConfig;
 import com.sohrab.obd.reader.obd.VehicleStatus;
 import com.sohrab.obd.reader.util.DateUtils;
 import com.sohrab.obd.reader.util.Logs;
+import com.sohrab.obd.reader.util.DisplayManager;
 import com.sohrab.obd.reader.util.Utils;
 
 import java.util.Date;
@@ -18,11 +19,11 @@ import java.util.List;
 
 public class WifiScanner {
     protected static final String LOG_PREFIX = "&#128247";
-    private static final int SCAN_FREQUENCY_SECONDS = 40;
 
     private WifiManager wifiManager = null;
     private Date lastScannedOn = DateUtils.addHours(new Date(), -5);
     private WifiValidator wifiValidator;
+
 
     BroadcastReceiver wifiScanReceiver = new BroadcastReceiver() {
         @Override
@@ -44,6 +45,7 @@ public class WifiScanner {
             wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
             wifiValidator = new WifiValidator();
 
+
             IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
             context.registerReceiver(wifiScanReceiver, intentFilter);
@@ -53,7 +55,7 @@ public class WifiScanner {
                 public void run() {
                     while (true) {
                         if (VehicleStatus.isEngineRunning()) {
-                            reScan();
+                            reScan(context);
                             wifiValidator.validate(context);
                         }
                         Utils.delay(2000);
@@ -69,12 +71,15 @@ public class WifiScanner {
     }
 
 
-    private void reScan() {
+    private void reScan(Context context) {
         try {
-            if (DateUtils.diffInSeconds(lastScannedOn) < SCAN_FREQUENCY_SECONDS)
+            if (DateUtils.diffInSeconds(lastScannedOn) < AppConfig.getDmWifiScanIntervalSeconds())
                 return;
 
             lastScannedOn = new Date();
+
+            DisplayManager.wakeupScreen(context, 5000);
+            Utils.delay(2000);
 
             // this is expected to be deprecated soon - https://stackoverflow.com/questions/56401057/wifimanager-startscan-deprecated-alternative
             boolean success = wifiManager.startScan();
