@@ -8,6 +8,7 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 
 import com.sohrab.obd.reader.common.AppConfig;
+import com.sohrab.obd.reader.obd.VehicleStatus;
 import com.sohrab.obd.reader.util.DateUtils;
 import com.sohrab.obd.reader.util.Logs;
 import com.sohrab.obd.reader.util.Utils;
@@ -51,8 +52,10 @@ public class WifiScanner {
             (new Thread() {
                 public void run() {
                     while (true) {
-                        reScan();
-                        wifiValidator.validate(context);
+                        if (VehicleStatus.isEngineRunning()) {
+                            reScan();
+                            wifiValidator.validate(context);
+                        }
                         Utils.delay(2000);
                     }
                 }
