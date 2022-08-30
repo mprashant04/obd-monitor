@@ -32,6 +32,7 @@ public class AppConfig {
         DM_SSID_FRONT("dm-ssid-front"),
         DM_SSID_REAR("dm-ssid-rear"),
         DM_WIFI_SCAN_INTERVAL_SECONDS("dm-wifi-scan-interval-seconds"),
+        DM_DISPLAY_WAKEUP_DURING_SCAN_SECONDS("dm-display-wakeup-during-scan-seconds"),
         DM_SSID_MARK_OFFLINE_AFTER_SECONDS("dm-ssid-mark-offline-after-seconds"),
         DM_ALERT_INTERVAL_SECONDS("dm-alert-interval-seconds");
 
@@ -122,6 +123,10 @@ public class AppConfig {
 
     public static int getDmWifiScanIntervalSeconds() {
         return Integer.parseInt(props.getProperty(SettingNames.DM_WIFI_SCAN_INTERVAL_SECONDS.getValue(), "60"));
+    }
+
+    public static int getDmDisplayWakeupDuringScanSeconds() {
+        return Integer.parseInt(props.getProperty(SettingNames.DM_DISPLAY_WAKEUP_DURING_SCAN_SECONDS.getValue(), "5"));
     }
 
     public static int getDmAlertIntervalSeconds() {

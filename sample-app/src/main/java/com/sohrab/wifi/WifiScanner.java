@@ -10,8 +10,8 @@ import android.net.wifi.WifiManager;
 import com.sohrab.obd.reader.common.AppConfig;
 import com.sohrab.obd.reader.obd.VehicleStatus;
 import com.sohrab.obd.reader.util.DateUtils;
-import com.sohrab.obd.reader.util.Logs;
 import com.sohrab.obd.reader.util.DisplayManager;
+import com.sohrab.obd.reader.util.Logs;
 import com.sohrab.obd.reader.util.Utils;
 
 import java.util.Date;
@@ -79,8 +79,8 @@ public class WifiScanner {
             lastScannedOn = new Date();
 
             //looks like wifi scanning resumes when display is awakened
-            DisplayManager.wakeupScreen(context, 5000);
-            Utils.delay(2000);
+            DisplayManager.wakeupScreen(context, AppConfig.getDmDisplayWakeupDuringScanSeconds() * 1000);
+            Utils.delay(AppConfig.getDmDisplayWakeupDuringScanSeconds() * 100);
 
             // this is expected to be deprecated soon - https://stackoverflow.com/questions/56401057/wifimanager-startscan-deprecated-alternative
             boolean success = wifiManager.startScan();
