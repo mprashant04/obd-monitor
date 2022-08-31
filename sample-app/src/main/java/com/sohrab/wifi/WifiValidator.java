@@ -22,8 +22,11 @@ public class WifiValidator {
     private Date lastOnlineTime_rear = DateUtils.addHours(new Date(), -5);
     private boolean wasOnline = false;
 
-    private Date lastOfflineNotificationTime = new Date();
+    private Date lastOfflineNotificationTime = null;
 
+    public WifiValidator() {
+        reset();
+    }
 
     public void validate(Context context) {
         try {
@@ -53,6 +56,11 @@ public class WifiValidator {
         } catch (Throwable ex) {
             Logs.error(ex);
         }
+    }
+
+    public void reset() {
+        wasOnline = false;
+        lastOfflineNotificationTime = new Date();
     }
 
     private void playNotification(Context context, MultimediaUtils.SoundFile soundFile, String logMsg, MultimediaUtils.LogLevel logLevel) {

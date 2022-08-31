@@ -57,6 +57,8 @@ public class WifiScanner {
                         if (VehicleStatus.isEngineRunning()) {
                             reScan(context);
                             wifiValidator.validate(context);
+                        } else {
+                            wifiValidator.reset();
                         }
                         Utils.delay(2000);
                     }
