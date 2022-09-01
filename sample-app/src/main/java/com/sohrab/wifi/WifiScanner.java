@@ -21,7 +21,7 @@ public class WifiScanner {
     protected static final String LOG_PREFIX = "&#128247";
 
     private WifiManager wifiManager = null;
-    private Date lastScannedOn = DateUtils.addHours(new Date(), -5);
+    private Date lastScannedOn = null;
     private WifiValidator wifiValidator;
 
 
@@ -37,8 +37,14 @@ public class WifiScanner {
         }
     };
 
+    private void reset() {
+        lastScannedOn = DateUtils.addHours(new Date(), -5);
+        wifiValidator.reset();
+    }
+
     public void init(final Context context) {
         try {
+            reset();
             if (!AppConfig.isDmEnabled())
                 return;
 
@@ -58,7 +64,7 @@ public class WifiScanner {
                             reScan(context);
                             wifiValidator.validate(context);
                         } else {
-                            wifiValidator.reset();
+                            reset();
                         }
                         Utils.delay(2000);
                     }
