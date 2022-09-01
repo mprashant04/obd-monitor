@@ -18,8 +18,8 @@ public class WifiValidator {
 //    private Date lastValidatedOn = DateUtils.addHours(new Date(), -1);
 //    private static final int VALIDATE_FREQUENCY_SECONDS = 10;
 
-    private Date lastOnlineTime_front = DateUtils.addHours(new Date(), -5);
-    private Date lastOnlineTime_rear = DateUtils.addHours(new Date(), -5);
+    private Date lastOnlineTime_front = null;
+    private Date lastOnlineTime_rear = null;
     private boolean wasOnline = false;
 
     private Date lastOfflineNotificationTime = null;
@@ -27,6 +27,15 @@ public class WifiValidator {
     public WifiValidator() {
         reset();
     }
+
+    public void reset() {
+        wasOnline = false;
+        lastOfflineNotificationTime = new Date();
+
+        lastOnlineTime_front = DateUtils.addHours(new Date(), -5);
+        lastOnlineTime_rear = DateUtils.addHours(new Date(), -5);
+    }
+
 
     public void validate(Context context) {
         try {
@@ -58,10 +67,6 @@ public class WifiValidator {
         }
     }
 
-    public void reset() {
-        wasOnline = false;
-        lastOfflineNotificationTime = new Date();
-    }
 
     private void playNotification(Context context, MultimediaUtils.SoundFile soundFile, String logMsg, MultimediaUtils.LogLevel logLevel) {
         MultimediaUtils.playSound(context,
