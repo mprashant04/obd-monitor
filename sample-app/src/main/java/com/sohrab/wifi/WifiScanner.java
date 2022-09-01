@@ -38,6 +38,8 @@ public class WifiScanner {
     };
 
     private void reset() {
+        if (null == wifiValidator) wifiValidator = new WifiValidator();
+
         lastScannedOn = DateUtils.addHours(new Date(), -5);
         wifiValidator.reset();
     }
@@ -49,7 +51,6 @@ public class WifiScanner {
                 return;
 
             wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-            wifiValidator = new WifiValidator();
 
 
             IntentFilter intentFilter = new IntentFilter();
