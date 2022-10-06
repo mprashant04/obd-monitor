@@ -21,6 +21,7 @@ public class WifiValidator {
     private Date lastOnlineTime_front = null;
     private Date lastOnlineTime_rear = null;
     private boolean wasOnline = false;
+    private int offlineInterval = 0;
 
     private Date lastOfflineNotificationTime = null;
 
@@ -34,6 +35,8 @@ public class WifiValidator {
 
         lastOnlineTime_front = DateUtils.addHours(new Date(), -5);
         lastOnlineTime_rear = DateUtils.addHours(new Date(), -5);
+
+        offlineInterval = AppConfig.getDmSsidMarkOfflineAfterSeconds();
     }
 
 
@@ -44,8 +47,10 @@ public class WifiValidator {
                 if (isOnlineFront() && isOnlineRear()) {
                     //----------- Both Online ---------------------------------------------------
                     if (!wasOnline)
-                        playNotification(context, MultimediaUtils.SoundFile.DM_OK, "Dashcams ok", MultimediaUtils.LogLevel.INFO);
+                        playNotification(context, MultimediaUtils.SoundFile.DM_OK, "Dashcams ok" + logSuffix(), MultimediaUtils.LogLevel.INFO);
                     wasOnline = true;
+
+                    offlineInterval = AppConfig.getDmSsidMarkOfflineAfterSeconds() * AppConfig.getDmSsidMarkOfflineAfterMultiplier();  //increment to longer interval after cameras found online after car start
 
                 } else {
                     //----------- Either/both offline  -------------------------------------------
@@ -53,11 +58,11 @@ public class WifiValidator {
                     if (DateUtils.diffInSeconds(lastOfflineNotificationTime) > AppConfig.getDmAlertIntervalSeconds()) {
                         lastOfflineNotificationTime = new Date();
                         if (!isOnlineFront() && !isOnlineRear())
-                            playNotification(context, MultimediaUtils.SoundFile.DM_FAILED_BOTH, "Both dashcams offline", MultimediaUtils.LogLevel.WARN);
+                            playNotification(context, MultimediaUtils.SoundFile.DM_FAILED_BOTH, "Both dashcams offline" + logSuffix(), MultimediaUtils.LogLevel.WARN);
                         else if (!isOnlineFront())
-                            playNotification(context, MultimediaUtils.SoundFile.DM_FAILED_FRONT, "Front dashcam offline", MultimediaUtils.LogLevel.WARN);
+                            playNotification(context, MultimediaUtils.SoundFile.DM_FAILED_FRONT, "Front dashcam offline" + logSuffix(), MultimediaUtils.LogLevel.WARN);
                         else if (!isOnlineRear())
-                            playNotification(context, MultimediaUtils.SoundFile.DM_FAILED_REAR, "Rear dashcam offline", MultimediaUtils.LogLevel.WARN);
+                            playNotification(context, MultimediaUtils.SoundFile.DM_FAILED_REAR, "Rear dashcam offline" + logSuffix(), MultimediaUtils.LogLevel.WARN);
                     }
                 }
 
@@ -65,6 +70,10 @@ public class WifiValidator {
         } catch (Throwable ex) {
             Logs.error(ex);
         }
+    }
+
+    private String logSuffix(){
+        return " (" + offlineInterval + ")";
     }
 
 
@@ -89,7 +98,7 @@ public class WifiValidator {
     }
 
     private boolean isOnline(Date onlineDate, String ssid) {
-        return (DateUtils.diffInSeconds(onlineDate) < AppConfig.getDmSsidMarkOfflineAfterSeconds());
+        return (DateUtils.diffInSeconds(onlineDate) < offlineInterval);
     }
 
 

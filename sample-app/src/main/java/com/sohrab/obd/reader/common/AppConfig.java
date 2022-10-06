@@ -34,6 +34,7 @@ public class AppConfig {
         DM_WIFI_SCAN_INTERVAL_SECONDS("dm-wifi-scan-interval-seconds"),
         DM_DISPLAY_WAKEUP_DURING_SCAN_SECONDS("dm-display-wakeup-during-scan-seconds"),
         DM_SSID_MARK_OFFLINE_AFTER_SECONDS("dm-ssid-mark-offline-after-seconds"),
+        DM_SSID_MARK_OFFLINE_AFTER_MULTIPLIER("dm-ssid-mark-offline-after-multiplier"),
         DM_ALERT_INTERVAL_SECONDS("dm-alert-interval-seconds");
 
         private String value = "";
@@ -119,6 +120,10 @@ public class AppConfig {
 
     public static int getDmSsidMarkOfflineAfterSeconds() {
         return Integer.parseInt(props.getProperty(SettingNames.DM_SSID_MARK_OFFLINE_AFTER_SECONDS.getValue(), "60"));
+    }
+
+    public static int getDmSsidMarkOfflineAfterMultiplier() {
+        return Integer.parseInt(props.getProperty(SettingNames.DM_SSID_MARK_OFFLINE_AFTER_MULTIPLIER.getValue(), "2"));
     }
 
     public static int getDmWifiScanIntervalSeconds() {
